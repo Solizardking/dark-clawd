@@ -8,7 +8,7 @@ set -euo pipefail
 PRODUCT_URL="${CLAWD_PRODUCT_URL:-https://cheshireterminal.ai/dark-clawd}"
 GITHUB_URL="${CLAWD_GITHUB_URL:-https://github.com/Solizardking/dark-clawd}"
 PKG="${CLAWD_NPM_PACKAGE:-@x402solana/dark-clawd}"
-VERSION="${CLAWD_VERSION:-1.1.0}"
+VERSION="${CLAWD_VERSION:-1.1.1}"
 TGZ_URL="${CLAWD_TGZ_URL:-https://github.com/Solizardking/dark-clawd/releases/download/v${VERSION}/x402solana-dark-clawd-${VERSION}.tgz}"
 BIN_DIR="${CLAWD_BIN_DIR:-$HOME/.local/bin}"
 INSTALL_MODE="${CLAWD_INSTALL_MODE:-auto}" # auto | npm | tgz | bun | npx-only

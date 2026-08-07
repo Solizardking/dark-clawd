@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1 — npm registry + version sync
+
+- Published **`@x402solana/dark-clawd@1.1.1`** to the public npm registry
+- CLI `PACKAGE_VERSION` / `dark-clawd --version` aligned with package version
+- Install: `npm install -g @x402solana/dark-clawd`
+
 ## 1.1.0 — SOL GPT tools + OpenRouter agent harness
 
 - **171 SOL GPT tools** shipped (`dark-clawd tools`) — Phoenix, Imperial, market, OHLCV, wallet, Helius, Solana Tracker (60), trading, prediction, browser, agents, platform

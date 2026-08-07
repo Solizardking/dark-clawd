@@ -6,6 +6,12 @@ Preferred npm package lives in `tui/` → `@x402solana/dark-clawd`.
 
 See [tui/CHANGELOG.md](tui/CHANGELOG.md) for package details.
 
+## 1.1.1 — public npm
+
+- Registry: `@x402solana/dark-clawd@1.1.1` (latest)
+- `npm install -g @x402solana/dark-clawd` verified end-to-end
+- Product version string synced with package
+
 ## 1.1.0 — SOL GPT tools + OpenRouter agent
 
 - **171 tools** via `dark-clawd tools` (122 core)

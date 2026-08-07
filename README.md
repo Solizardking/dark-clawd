@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/Solizardking/dark-clawd"><img src="https://img.shields.io/github/stars/Solizardking/dark-clawd?style=for-the-badge" alt="GitHub stars"></a>
-  <a href="https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.0"><img src="https://img.shields.io/badge/release-v1.1.0-blue?style=for-the-badge" alt="v1.1.0"></a>
+  <a href="https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.1"><img src="https://img.shields.io/badge/release-v1.1.1-blue?style=for-the-badge" alt="v1.1.1"></a>
   <a href="https://www.npmjs.com/package/@x402solana/dark-clawd"><img src="https://img.shields.io/npm/v/@x402solana/dark-clawd?style=for-the-badge" alt="npm"></a>
   <a href="docs/SOL_GPT_TOOLS.md"><img src="https://img.shields.io/badge/tools-171-14F195?style=for-the-badge&labelColor=0b1220" alt="171 tools"></a>
   <a href="docs/SOL_GPT_TOOLS.md"><img src="https://img.shields.io/badge/core-122-9945FF?style=for-the-badge&labelColor=0b1220" alt="122 core"></a>
@@ -54,11 +54,11 @@
 
 | | |
 |--|--|
-| **npm** | `@x402solana/dark-clawd@1.1.0` |
+| **npm** | `@x402solana/dark-clawd@1.1.1` |
 | **Bins** | `dark-clawd` · `clawd` · `clawd-tui` |
 | **Hub** | [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd) |
 | **Repo** | [github.com/Solizardking/dark-clawd](https://github.com/Solizardking/dark-clawd) |
-| **Release** | [v1.1.0](https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.0) |
+| **Release** | [v1.1.1](https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.1) |
 
 **Lineage:** forged from **Ralph** on Solana — same recursive OODA heart, darker shell, claw-forward identity.
 
@@ -85,7 +85,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        DARK CLAWD ECOSYSTEM  v1.1.0                         │
+│                        DARK CLAWD ECOSYSTEM  v1.1.1                         │
 │         cheshireterminal.ai/dark-clawd  ·  @x402solana/dark-clawd           │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
@@ -113,7 +113,7 @@
 
 ## 🚀 QUICK START
 
-**Package:** `@x402solana/dark-clawd@1.1.0` (publish surface: `tui/`)  
+**Package:** `@x402solana/dark-clawd@1.1.1` (publish surface: `tui/`)  
 **Runtime for consumers:** Node.js ≥18 (Bun not required)
 
 | Surface | URL |
@@ -121,7 +121,7 @@
 | **Product hub** | [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd) |
 | **GitHub** | [github.com/Solizardking/dark-clawd](https://github.com/Solizardking/dark-clawd) |
 | **npm** | [`@x402solana/dark-clawd`](https://www.npmjs.com/package/@x402solana/dark-clawd) |
-| **Release** | [v1.1.0](https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.0) |
+| **Release** | [v1.1.1](https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.1) |
 | **Tools docs** | [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md) |
 
 ### Install
@@ -134,7 +134,7 @@ npm install -g @x402solana/dark-clawd
 curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
 
 # Release tarball mirror
-npm install -g https://github.com/Solizardking/dark-clawd/releases/download/v1.1.0/x402solana-dark-clawd-1.1.0.tgz
+npm install -g https://github.com/Solizardking/dark-clawd/releases/download/v1.1.1/x402solana-dark-clawd-1.1.1.tgz
 ```
 
 ### First commands
@@ -259,7 +259,7 @@ Requires `OPENROUTER_API_KEY` — [openrouter.ai/settings/keys](https://openrout
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
-║  dark-clawd / clawd / clawd-tui                            v1.1.0        ║
+║  dark-clawd / clawd / clawd-tui                            v1.1.1        ║
 ║  ──────────────────────────────────────────────────────────────────────  ║
 ║  welcome · --help · info · status · setup · wallet                       ║
 ║  run [--auto|--interactive|--wallet|--headless]              Bloomberg   ║
@@ -447,7 +447,7 @@ dark-clawd/                      # github.com/Solizardking/dark-clawd
 ├── README.md · CHANGELOG.md · LICENSE
 │
 ├── tui/                         # ★ Preferred npm surface (publish from here)
-│   ├── package.json             # @x402solana/dark-clawd@1.1.0
+│   ├── package.json             # @x402solana/dark-clawd@1.1.1
 │   ├── install.sh               # one-shot installer
 │   ├── CHANGELOG.md · README.md
 │   ├── scripts/fix-shebang.mjs  # Node shebang for npm bins
@@ -492,7 +492,7 @@ dark-clawd/                      # github.com/Solizardking/dark-clawd
 |---------|-----|
 | Product hub | https://cheshireterminal.ai/dark-clawd |
 | GitHub | https://github.com/Solizardking/dark-clawd |
-| Release v1.1.0 | https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.0 |
+| Release v1.1.1 | https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.1 |
 | npm | https://www.npmjs.com/package/@x402solana/dark-clawd |
 | OpenClawd site | https://solanaclawd.com |
 | Holder vault | https://solanaclawd.com/vault |

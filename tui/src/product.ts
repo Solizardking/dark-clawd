@@ -6,7 +6,7 @@ export const PRODUCT_NAME = 'Dark Clawd';
 export const PRODUCT_TAGLINE =
   'Autonomous Solana terminal intelligence — Bloomberg TUI + 171 SOL GPT tools + OpenRouter agent harness';
 export const PACKAGE_NAME = '@x402solana/dark-clawd';
-export const PACKAGE_VERSION = '1.1.0';
+export const PACKAGE_VERSION = '1.1.1';
 
 export const PRODUCT_HUB_URL = 'https://cheshireterminal.ai/dark-clawd';
 export const PRODUCT_GITHUB_URL = 'https://github.com/Solizardking/dark-clawd';
