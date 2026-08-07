@@ -40,6 +40,15 @@ import {
   PRODUCT_NAME,
   productInfoRecord,
 } from './product.js';
+import {
+  getSolGptShippedToolCatalog,
+  runSolGptTool,
+  searchTools,
+  SOL_GPT_CORE_COUNT,
+  SOL_GPT_TOOL_COUNT,
+  toolsByGroup,
+  type ToolGroupId,
+} from './tools/index.js';
 
 // Load environment variables
 dotenvConfig();
@@ -586,6 +595,155 @@ program
   .action(() => {
     console.log(JSON.stringify(buildAutomationKitManifest(), null, 2));
   });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SOL GPT tool catalog (171 tools)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const toolsCmd = program
+  .command('tools')
+  .description(`SOL GPT tool catalog (${SOL_GPT_TOOL_COUNT} tools: research + user-signed prepare)`);
+
+toolsCmd
+  .command('list')
+  .description('List all shipped tools (optionally by group)')
+  .option('-g, --group <id>', 'Filter by group id (phoenix, imperial, market, …)')
+  .option('--core', 'Only core tools (always-on for Kimi)')
+  .option('--json', 'JSON output')
+  .action((options) => {
+    const catalog = getSolGptShippedToolCatalog();
+    let tools = catalog.tools;
+    if (options.group) {
+      tools = toolsByGroup(options.group as ToolGroupId);
+    }
+    if (options.core) tools = tools.filter((t) => t.core);
+    if (options.json) {
+      console.log(JSON.stringify({ total: tools.length, tools }, null, 2));
+      return;
+    }
+    console.log(
+      chalk.greenBright(
+        `\n🦞 Dark Clawd SOL GPT tools — ${tools.length} shown · ${SOL_GPT_TOOL_COUNT} shipped · ${SOL_GPT_CORE_COUNT} core\n`,
+      ),
+    );
+    for (const g of catalog.groups) {
+      const rows = tools.filter((t) => t.group === g.id);
+      if (!rows.length) continue;
+      console.log(chalk.cyan(`▸ ${g.title} (${rows.length})`) + chalk.gray(` — ${g.blurb}`));
+      for (const t of rows) {
+        const badge = t.core ? chalk.magenta('core') : chalk.gray('spec');
+        const custody = t.custody === 'user-signed' ? chalk.yellow('user-signed') : chalk.gray('read-only');
+        console.log(`  ${badge} ${custody} ${chalk.white(t.name)}`);
+      }
+      console.log('');
+    }
+  });
+
+toolsCmd
+  .command('catalog')
+  .description('Print catalog totals and groups (JSON)')
+  .action(() => {
+    const catalog = getSolGptShippedToolCatalog();
+    console.log(
+      JSON.stringify(
+        {
+          product: catalog.product,
+          catalog: catalog.catalog,
+          total: catalog.total,
+          core: catalog.core,
+          specialty: catalog.specialty,
+          groups: catalog.groups.map(({ id, title, blurb, count }) => ({ id, title, blurb, count })),
+        },
+        null,
+        2,
+      ),
+    );
+  });
+
+toolsCmd
+  .command('search')
+  .description('Search tools by keyword')
+  .argument('<query>', 'Keyword (e.g. phoenix, wallet, st_get)')
+  .option('-n, --limit <n>', 'Max results', (v) => parseInt(v, 10), 25)
+  .option('--json', 'JSON output')
+  .action((query, options) => {
+    const hits = searchTools(query, options.limit);
+    if (options.json) {
+      console.log(JSON.stringify({ query, count: hits.length, tools: hits }, null, 2));
+      return;
+    }
+    console.log(chalk.greenBright(`\nSearch “${query}” → ${hits.length} hits\n`));
+    for (const t of hits) {
+      console.log(
+        `  ${chalk.white(t.name)} ${chalk.gray(`[${t.group}]`)} ${t.core ? chalk.magenta('core') : ''} ${t.custody === 'user-signed' ? chalk.yellow('user-signed') : ''}`,
+      );
+      console.log(chalk.gray(`    ${t.description.slice(0, 120)}${t.description.length > 120 ? '…' : ''}`));
+    }
+  });
+
+toolsCmd
+  .command('run')
+  .description('Run a tool by name (non-custodial; prepare_* never signs)')
+  .argument('<name>', 'Tool name (e.g. get_price, list_phoenix_markets, search_tools)')
+  .option('--arg <key=value...>', 'Tool args (repeatable)', (v, acc: string[]) => {
+    acc.push(v);
+    return acc;
+  }, [] as string[])
+  .option('--json-args <json>', 'Tool args as JSON object')
+  .option('--wallet <address>', 'Wallet context for portfolio/perps tools')
+  .action(async (name, options) => {
+    const args: Record<string, unknown> = {};
+    if (options.jsonArgs) {
+      try {
+        Object.assign(args, JSON.parse(options.jsonArgs));
+      } catch {
+        console.error(chalk.red('Invalid --json-args JSON'));
+        process.exitCode = 1;
+        return;
+      }
+    }
+    for (const pair of options.arg || []) {
+      const i = String(pair).indexOf('=');
+      if (i <= 0) continue;
+      const k = String(pair).slice(0, i);
+      const v = String(pair).slice(i + 1);
+      args[k] = v;
+    }
+    const spinner = ora(`Running ${name}…`).start();
+    const result = await runSolGptTool({
+      tool: name,
+      args,
+      wallet: options.wallet || process.env.SOLANA_WALLET,
+    });
+    if (result.ok) spinner.succeed(`${name} ok`);
+    else spinner.fail(`${name} failed`);
+    console.log(JSON.stringify(result, null, 2));
+    if (!result.ok) process.exitCode = 1;
+  });
+
+// default tools → catalog summary
+toolsCmd.action(() => {
+  const catalog = getSolGptShippedToolCatalog();
+  console.log(
+    boxen(
+      [
+        `${PRODUCT_NAME} · SOL GPT tool catalog`,
+        `Shipped: ${catalog.total}  ·  Core: ${catalog.core}  ·  Specialty: ${catalog.specialty}`,
+        '',
+        ...catalog.groups.map((g) => `  ${String(g.count).padStart(3)}  ${g.id.padEnd(14)} ${g.title}`),
+        '',
+        'Commands:',
+        '  dark-clawd tools list',
+        '  dark-clawd tools list --group phoenix',
+        '  dark-clawd tools search wallet',
+        '  dark-clawd tools catalog',
+        '  dark-clawd tools run get_price --arg mint=<MINT>',
+        '  dark-clawd tools run search_tools --arg query=phoenix',
+      ].join('\n'),
+      { padding: 1, borderColor: 'magenta', title: '171 tools', titleAlignment: 'center' },
+    ),
+  );
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Default Command (run)
