@@ -12,9 +12,10 @@
   "scripts": {
     "dev": "bun run src/cli.tsx",
     "copy:wasm": "sh -c 'mkdir -p dist && if [ -f node_modules/yoga-wasm-web/dist/yoga.wasm ]; then cp node_modules/yoga-wasm-web/dist/yoga.wasm dist/yoga.wasm; else cp ../node_modules/yoga-wasm-web/dist/yoga.wasm dist/yoga.wasm; fi'",
-    "build": "bun build src/cli.tsx --outdir dist --target node && bun run copy:wasm",
+    "fix:shebang": "node scripts/fix-shebang.mjs",
+    "build": "bun build src/cli.tsx --outdir dist --target node && bun run copy:wasm && bun run fix:shebang",
     "build:lib": "bun build src/index.ts --outdir dist --target node && bun run copy:wasm",
-    "start": "bun run dist/cli.js",
+    "start": "node dist/cli.js",
     "run": "bun run src/cli.tsx run",
     "setup": "bun run src/cli.tsx setup",
     "status": "bun run src/cli.tsx status",
@@ -31,6 +32,7 @@
     "lint": "eslint src/**/*.{ts,tsx}",
     "test": "bun test --pass-with-no-tests src",
     "clean": "rm -rf dist",
+    "prepack": "bun run build && bun run build:lib",
     "prepublishOnly": "bun run build && bun run build:lib"
   },
   "dependencies": {
