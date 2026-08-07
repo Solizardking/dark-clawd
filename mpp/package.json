@@ -1,12 +1,12 @@
 {
   "name": "solana-mpp",
   "version": "0.5.0",
-  "description": "Solana MPP — SPL token payments for the Machine Payments Protocol (HTTP 402). Powered by @solana/mpp charge methods; Dark Clawd automation kit included.",
+  "description": "Solana MPP \u2014 SPL token payments for the Machine Payments Protocol (HTTP 402). Powered by @solana/mpp charge methods; Dark Clawd automation kit included.",
   "license": "ISC",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Solizardking/clawdbot.git",
+    "url": "git+https://github.com/Solizardking/openclawd-dark-clawd.git",
     "directory": "dark-ralph/mpp"
   },
   "homepage": "https://cheshireterminal.ai/dark-clawd",
@@ -66,8 +66,12 @@
     "mppx": ">=0.5.5"
   },
   "peerDependenciesMeta": {
-    "@solana/kit": { "optional": true },
-    "mppx": { "optional": true }
+    "@solana/kit": {
+      "optional": true
+    },
+    "mppx": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^25.5.0",

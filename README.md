@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Solizardking/dark-clawd"><img src="https://img.shields.io/github/stars/Solizardking/dark-clawd?style=for-the-badge" alt="GitHub stars"></a>
-  <a href="https://github.com/Solizardking/dark-clawd"><img src="https://img.shields.io/badge/GitHub-public-brightgreen?style=for-the-badge" alt="Public repo"></a>
+  <a href="https://github.com/Solizardking/openclawd-dark-clawd"><img src="https://img.shields.io/github/stars/Solizardking/openclawd-dark-clawd?style=for-the-badge" alt="GitHub stars"></a>
+  <a href="https://github.com/Solizardking/openclawd-dark-clawd"><img src="https://img.shields.io/badge/GitHub-public-brightgreen?style=for-the-badge" alt="Public repo"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
 
@@ -143,7 +143,7 @@ clawd
 
 ```bash
 # Clone and run (public product repo)
-git clone https://github.com/Solizardking/dark-clawd.git
+git clone https://github.com/Solizardking/openclawd-dark-clawd.git
 cd dark-clawd
 bun install
 # optional: copy provider keys into .env

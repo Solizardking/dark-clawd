@@ -101,7 +101,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Solizardking/dark-clawd.git",
+    "url": "git+https://github.com/Solizardking/openclawd-dark-clawd.git",
     "directory": "tui"
   },
   "files": [
@@ -114,6 +114,6 @@
   ],
   "homepage": "https://cheshireterminal.ai/dark-clawd",
   "bugs": {
-    "url": "https://github.com/Solizardking/dark-clawd/issues"
+    "url": "https://github.com/Solizardking/openclawd-dark-clawd/issues"
   }
 }
