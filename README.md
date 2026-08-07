@@ -12,7 +12,61 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
 
+## Install (live on npm)
 
+**Public package:** [`@x402solana/dark-clawd@1.1.1`](https://www.npmjs.com/package/@x402solana/dark-clawd) · **Node ≥18** · Bun not required for consumers
+
+```bash
+# Preferred — global install from the public registry
+npm install -g @x402solana/dark-clawd
+
+# Verify
+dark-clawd --help
+dark-clawd welcome
+dark-clawd status
+```
+
+| | |
+|--|--|
+| **Package** | `@x402solana/dark-clawd` (`latest` → `1.1.1`) |
+| **Bins** | `dark-clawd` · `clawd` · `clawd-tui` (all → `dist/cli.js`, Node shebang) |
+| **Runtime** | Node.js ≥18 (no Bun at install or runtime) |
+| **Hub** | [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd) |
+| **GitHub** | [github.com/Solizardking/dark-clawd](https://github.com/Solizardking/dark-clawd) |
+| **npm** | [npmjs.com/package/@x402solana/dark-clawd](https://www.npmjs.com/package/@x402solana/dark-clawd) |
+| **Release** | [v1.1.1](https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.1) |
+| **Hub handoff** | [`darkclawd.md`](darkclawd.md) — wire the product client on Cheshire Terminal |
+
+### Alternate install paths
+
+```bash
+# One-shot installer (registry first, then GitHub release tarball)
+curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
+
+# Hub-hosted installer (when proxied by cheshireterminal.ai)
+curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
+
+# Release tarball mirror (works offline from npm registry)
+npm install -g https://github.com/Solizardking/dark-clawd/releases/download/v1.1.1/x402solana-dark-clawd-1.1.1.tgz
+
+# One-off without global install
+npx @x402solana/dark-clawd --help
+```
+
+### First commands after install
+
+```bash
+dark-clawd welcome          # hub · GitHub · install · next steps
+dark-clawd tools            # 171 SOL GPT tools catalog
+dark-clawd agent            # OpenRouter multi-turn tool loop (needs OPENROUTER_API_KEY)
+dark-clawd run              # Bloomberg-style TUI
+dark-clawd setup            # interactive env wizard
+```
+
+> **Publish surface:** package is built and published from [`tui/`](tui/) (`prepack` builds `dist/cli.js` + Node shebang).  
+> **Hub client work:** give agents [`darkclawd.md`](darkclawd.md) to implement/support [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd).
+
+---
 
 ```
           ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
@@ -60,7 +114,7 @@
 | **Repo** | [github.com/Solizardking/dark-clawd](https://github.com/Solizardking/dark-clawd) |
 | **Release** | [v1.1.1](https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.1) |
 
-**Lineage:** forged from **Ralph** on Solana — same recursive OODA heart, darker shell, claw-forward identity.
+**Lineage:** forged from **Ralph** on Solana — same recursive OODA heart, darker shell, claw-forward identity. Workspace lineage path: `dark-ralph` → Dark Clawd; OODA prompt: [`agent/RALPH.md`](agent/RALPH.md).
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -113,8 +167,8 @@
 
 ## 🚀 QUICK START
 
-**Package:** `@x402solana/dark-clawd@1.1.1` (publish surface: `tui/`)  
-**Runtime for consumers:** Node.js ≥18 (Bun not required)
+Install is at the **[top of this README](#install-live-on-npm)** — package is live on npm as `@x402solana/dark-clawd@1.1.1`.  
+Hub client handoff for Cheshire: [`darkclawd.md`](darkclawd.md).
 
 | Surface | URL |
 |---------|-----|
@@ -123,21 +177,9 @@
 | **npm** | [`@x402solana/dark-clawd`](https://www.npmjs.com/package/@x402solana/dark-clawd) |
 | **Release** | [v1.1.1](https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.1) |
 | **Tools docs** | [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md) |
+| **Hub handoff** | [`darkclawd.md`](darkclawd.md) |
 
-### Install
-
-```bash
-# Preferred — npm registry
-npm install -g @x402solana/dark-clawd
-
-# One-shot installer (registry → GitHub tarball fallback)
-curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
-
-# Release tarball mirror
-npm install -g https://github.com/Solizardking/dark-clawd/releases/download/v1.1.1/x402solana-dark-clawd-1.1.1.tgz
-```
-
-### First commands
+### First commands (after `npm install -g @x402solana/dark-clawd`)
 
 ```bash
 # bins: dark-clawd · clawd · clawd-tui
@@ -527,6 +569,7 @@ After each Python OODA agent run, a PnL summary is output:
 
 ## 📚 DOCUMENTATION
 
+- [`darkclawd.md`](darkclawd.md) — **Cheshire hub handoff** (add client at cheshireterminal.ai/dark-clawd)
 - [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md) — **171-tool catalog**, CLI, agent, env
 - [`tui/README.md`](tui/README.md) — package surface (npm install surface)
 - [`tui/CHANGELOG.md`](tui/CHANGELOG.md) · [`CHANGELOG.md`](CHANGELOG.md)
