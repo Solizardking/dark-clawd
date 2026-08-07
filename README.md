@@ -390,25 +390,21 @@ The **Clawd OODA Loop** (Observe–Orient–Decide–Act) is the beating heart �
 
 ## 🔌 SERVICE INTEGRATIONS
 
-```
-╔═══════════════════════════════════════════════════════════════════════╗
-║  SERVICE         │  ENABLES                                           ║
-╠═══════════════════════════════════════════════════════════════════════╣
-║  Helius          │  Solana RPC, DAS API, balances, transactions       ║
-║  Birdeye         │  Token prices, OHLCV, trending, market data        ║
-║  Phoenix Perps   │  Rise SDK exchange metadata, perps commands        ║
-║  xAI Grok        │  Real-time search & market reasoning               ║
-║  Perplexity      │  Deep research workflows                           ║
-║  OpenRouter      │  Model-backed reasoning (configurable model)       ║
-║  News API        │  Crypto news feed aggregation                      ║
-║  SERP API        │  Search result enrichment                          ║
-║  Financial Sets  │  Market & sentiment data augmentation              ║
-╚═══════════════════════════════════════════════════════════════════════╝
-```
+| Service | Enables |
+|---------|---------|
+| **OpenRouter** | Agent harness + model routing (`dark-clawd agent`) |
+| **Helius** | Solana RPC, DAS, balances, history |
+| **Birdeye** | Prices, OHLCV, trending, security |
+| **Phoenix Perps** | Eternal markets, funding, user-signed prepare |
+| **Imperial** | Multi-venue perps intel (read-only) |
+| **Solana Tracker** | Portfolio, PnL, trending, DAS + RPC (60 tools) |
+| **DFlow** | Spot quotes / prediction markets |
+| **xAI Grok / Perplexity / Moonshot** | Optional research / chat providers |
+| **Browser Use** | Cloud browser research tools |
 
 ### Configuration
 
-Create `.env` (or `~/.darkclawd/config.env`) with your keys:
+Create `.env` (or `~/.darkclawd/config.env` — also written by `install.sh`):
 
 ```env
 # —— Agent harness (OpenRouter) ——
@@ -427,14 +423,18 @@ IMPERIAL_API_BASE=https://api.imperial.space/api/v1
 # —— Solana Tracker (60 tools) ——
 SOLANA_TRACKER_API_KEY=
 SOLANA_TRACKER_RPC_URL=
+SOLANA_TRACKER_RPC_API_KEY=
 
-# —— Optional AI / research ——
+# —— Optional ——
 XAI_API_KEY=
 PERPLEXITY_API_KEY=
 MOONSHOT_API_KEY=
+DFLOW_API_URL=
+BROWSER_USE_API_KEY=
 NEWS_API_KEY=
 SERP_API_KEY=
-BROWSER_USE_API_KEY=
+CLAWD_AUTO_MODE=true
+CLAWD_SANDBOX_PORT=18790
 ```
 
 ---
@@ -442,72 +442,69 @@ BROWSER_USE_API_KEY=
 ## 📁 PROJECT LAYOUT
 
 ```
-dark-ralph/                   # workspace path (product: Dark Clawd)
-├── package.json              # @x402solana/dark-clawd (+ legacy ralph bins)
-├── bun.lock · tsconfig.json · .gitignore
-├── README.md
+dark-clawd/                      # github.com/Solizardking/dark-clawd
+├── package.json                 # workspace meta (@x402solana/dark-clawd)
+├── README.md · CHANGELOG.md · LICENSE
 │
-├── src/                      # Root TUI (Bun + Ink + React)
-│   ├── cli.tsx · App.tsx · index.ts · openclawd.ts
-│   ├── components/           # Bloomberg + Perps panels
-│   ├── engine/clawd-agent.ts
-│   ├── services/             # Birdeye, Helius, Phoenix, AI, news
-│   ├── config/               # schema · themes
-│   └── skills/solana-wallet.ts
+├── tui/                         # ★ Preferred npm surface (publish from here)
+│   ├── package.json             # @x402solana/dark-clawd@1.1.0
+│   ├── install.sh               # one-shot installer
+│   ├── CHANGELOG.md · README.md
+│   ├── scripts/fix-shebang.mjs  # Node shebang for npm bins
+│   └── src/
+│       ├── cli.tsx              # dark-clawd CLI entry
+│       ├── product.ts           # hub / github / npm identity
+│       ├── agent/               # OpenRouter harness
+│       ├── tools/               # 171 SOL GPT catalog + runner
+│       ├── engine/clawd-agent.ts
+│       ├── services/            # birdeye · helius · phoenix · trade · sandbox
+│       └── components/          # Bloomberg TUI panels
 │
-├── tui/                      # Preferred package surface (publish from here)
-│   ├── package.json          # bins: clawd · dark-clawd · clawd-tui
-│   ├── .env.example          # committed template (.env gitignored)
-│   ├── install.sh · Dockerfile · fly.toml
-│   ├── dist/                 # cli.js · index.js · yoga.wasm (build)
-│   └── src/                  # package sources (+ trade/sandbox/mpp)
-│
-├── agent/                    # Python OODA loop (Ralph core)
-│   ├── loop.py · tui.py · memory.py · RALPH.md · journal/
-│
-├── automaton/                # Sovereign / background agent runtime
-├── llm-wiki-tang/            # Research / memory API
-├── mpp/                      # Solana MPP (HTTP 402) kit
-│
-└── docs/                     # Birdeye · OpenClawd · X article + assets/
+├── src/                         # monorepo root TUI (dev twin)
+├── agent/                       # Python OODA (Ralph) loop
+├── automaton/                   # Sovereign runtime bridge
+├── mpp/ · llm-wiki-tang/
+└── docs/
+    ├── SOL_GPT_TOOLS.md         # full 171-tool reference
+    ├── AUTOMATON_INTEGRATION.md
+    ├── BIRDEYE_INTEGRATION.md
+    └── OPENCLAWD_ADAPTATION.md
 ```
 
 ---
 
 ## 🛠️ BUILT WITH
 
-```
-╔═══════════════════════════════════════════════════════════════════════╗
-║  Bun           Runtime & package manager                              ║
-║  Ink + React   Terminal rendering framework                           ║
-║  @solana/      Solana blockchain integration                          ║
-║  web3.js                                                              ║
-║  Rise SDK      Phoenix perpetual futures                              ║
-║  Zod           Runtime type validation                                ║
-║  Commander     CLI framework                                          ║
-║  Python 3.10+  Agent loop (stdlib-only, zero deps)                    ║
-║  FastAPI       LLM Wiki Tang backend                                  ║
-╚═══════════════════════════════════════════════════════════════════════╝
-```
+| Layer | Stack |
+|-------|--------|
+| CLI / package | Node ≥18, Commander, TypeScript, `bun build --target node` |
+| TUI | Bun + Ink + React |
+| Solana | `@solana/web3.js`, Helius, Birdeye, Phoenix Rise SDK |
+| Agent | OpenRouter Chat Completions tool loop |
+| OODA | Python 3.10+ (stdlib) |
+| Automation | Fly sandbox · MPP (HTTP 402) |
 
 ---
 
-## 🔗 OPENCLAWD MAPPING
+## 🔗 LINKS
 
-| Surface | Route |
-|---------|-------|
-| Site | `solanaclawd.com` |
-| Holder Vault | `solanaclawd.com/vault` |
-| Chat & Voice | `solanaclawd.com/chat` |
-| Trading Console | `solanaclawd.com/trading` |
-| Agent API | `agents.openclawd.biz` |
-| Local Config | `src/openclawd.ts` |
+| Surface | URL |
+|---------|-----|
+| Product hub | https://cheshireterminal.ai/dark-clawd |
+| GitHub | https://github.com/Solizardking/dark-clawd |
+| Release v1.1.0 | https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.0 |
+| npm | https://www.npmjs.com/package/@x402solana/dark-clawd |
+| OpenClawd site | https://solanaclawd.com |
+| Holder vault | https://solanaclawd.com/vault |
+| Chat & voice | https://solanaclawd.com/chat |
+| Trading console | https://solanaclawd.com/trading |
+| Agent API | https://agents.openclawd.biz |
 
 ---
 
 ## 📈 PERFORMANCE METRICS
 
-After each agent run, a PnL summary is output:
+After each Python OODA agent run, a PnL summary is output:
 
 ```
 ============================================================
@@ -528,53 +525,18 @@ After each agent run, a PnL summary is output:
 
 ---
 
-## 🧰 SOL GPT TOOL CATALOG (171)
-
-Dark Clawd ships the full **SOL GPT** non-custodial tool surface (research + user-signed prepare) — same catalog used by the OpenRouter agent harness.
-
-| Group | Id | Tools | Blurb |
-|-------|----|------:|-------|
-| **Phoenix Eternal** | `phoenix` | 23 | Perps research + user-signed trade prep |
-| **Imperial router** | `imperial` | 32 | Multi-venue perps intel (Jupiter / Flash / Phoenix / GMTrade) |
-| **Market data** | `market` | 18 | Prices, search, trending, memes, security |
-| **OHLCV & live tape** | `ohlcv` | 10 | Candles, live price, trades |
-| **Wallet & portfolio** | `wallet` | 4 | Net worth, PnL, assets, balances |
-| **Helius Wallet API** | `helius` | 8 | Identity, history, transfers, activity |
-| **Solana Tracker** | `solanatracker` | 60 | Portfolio, PnL, trending, DAS + RPC |
-| **Swaps & sends** | `trading` | 5 | Quotes + user-signed swap/transfer prep |
-| **Prediction markets** | `prediction` | 3 | DFlow / Kalshi read-only |
-| **Cloud browser** | `browser` | 4 | Browser Use research |
-| **Agents & DAS** | `agents` | 2 | Metaplex / agent discovery |
-| **Platform** | `platform` | 2 | `search_tools`, sponge status |
-| **Total** | | **171** | **122 core** · 49 specialty |
-
-### Execution model
-
-- **Research tools** → JSON only (HTTP / RPC).
-- **Live spends** → `prepare_user_*` / `prepare_phoenix_*` return **unsigned plans**; your wallet signs. Server never holds keys.
-- **Agent loop** → `dark-clawd agent` loads **core tools every turn** and uses `search_tools` for specialty (OpenRouter Chat Completions harness).
-
-```bash
-dark-clawd tools
-dark-clawd tools list --group imperial
-dark-clawd tools run list_phoenix_markets
-dark-clawd tools run prepare_user_swap --arg inputMint=… --arg outputMint=… --arg amount=…
-dark-clawd agent -p "Show Phoenix SOL-PERP mark and funding"
-```
-
-Full reference: [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md).
-
 ## 📚 DOCUMENTATION
 
-- [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md) — SOL GPT 171-tool catalog + CLI
-- [`docs/BIRDEYE_INTEGRATION.md`](docs/BIRDEYE_INTEGRATION.md) — Birdeye market data setup
-- [`docs/OPENCLAWD_ADAPTATION.md`](docs/OPENCLAWD_ADAPTATION.md) — OpenClawd adaptation guide
-- [`docs/AUTOMATON_INTEGRATION.md`](docs/AUTOMATON_INTEGRATION.md) — Automaton sovereign runtime bridge
-- [`docs/X_ARTICLE.md`](docs/X_ARTICLE.md) — Published X article
-- [`agent/README.md`](agent/README.md) — Agent loop documentation
-- [`agent/RALPH.md`](agent/RALPH.md) — Per-tick agent prompt (Ralph lineage)
-- [`automaton/README.md`](automaton/README.md) — Automaton runtime docs
-- [`tui/README.md`](tui/README.md) — Dark Clawd TUI package docs
+- [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md) — **171-tool catalog**, CLI, agent, env
+- [`tui/README.md`](tui/README.md) — package surface (npm install surface)
+- [`tui/CHANGELOG.md`](tui/CHANGELOG.md) · [`CHANGELOG.md`](CHANGELOG.md)
+- [`docs/AUTOMATON_INTEGRATION.md`](docs/AUTOMATON_INTEGRATION.md) — Automaton bridge
+- [`docs/BIRDEYE_INTEGRATION.md`](docs/BIRDEYE_INTEGRATION.md) — Birdeye setup
+- [`docs/OPENCLAWD_ADAPTATION.md`](docs/OPENCLAWD_ADAPTATION.md) — OpenClawd mapping
+- [`agent/README.md`](agent/README.md) · [`agent/RALPH.md`](agent/RALPH.md) — OODA loop
+- [`automaton/README.md`](automaton/README.md) — sovereign runtime
+
+---
 
 ---
 
