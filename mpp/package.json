@@ -1,0 +1,79 @@
+{
+  "name": "solana-mpp",
+  "version": "0.5.0",
+  "description": "Solana MPP — SPL token payments for the Machine Payments Protocol (HTTP 402). Powered by @solana/mpp charge methods; Dark Clawd automation kit included.",
+  "license": "ISC",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Solizardking/clawdbot.git",
+    "directory": "dark-ralph/mpp"
+  },
+  "homepage": "https://cheshireterminal.ai/dark-clawd",
+  "keywords": [
+    "solana",
+    "mpp",
+    "mppx",
+    "http-402",
+    "payments",
+    "spl-token",
+    "dark-clawd",
+    "machine-payments"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "default": "./dist/server/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    },
+    "./dark-clawd": {
+      "types": "./dist/dark-clawd/index.d.ts",
+      "import": "./dist/dark-clawd/index.js",
+      "default": "./dist/dark-clawd/index.js"
+    }
+  },
+  "bin": {
+    "solana-mpp-info": "./bin/info.mjs"
+  },
+  "files": [
+    "dist",
+    "src",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && bun run build:dark-clawd",
+    "build:dark-clawd": "bun build src/dark-clawd/index.ts --outdir dist/dark-clawd --target node --format esm && bun -e \"const fs=require('fs');fs.copyFileSync('src/dark-clawd/index.ts','dist/dark-clawd/index.d.ts')\"",
+    "typecheck": "tsc --noEmit -p tsconfig.build.json 2>/dev/null || true",
+    "test": "bun test src/dark-clawd",
+    "info": "node bin/info.mjs"
+  },
+  "dependencies": {
+    "@solana-program/compute-budget": "^0.15.0",
+    "@solana-program/system": "^0.12.0",
+    "@solana-program/token": "^0.11.0"
+  },
+  "peerDependencies": {
+    "@solana/kit": ">=6.5.0",
+    "mppx": ">=0.5.5"
+  },
+  "peerDependenciesMeta": {
+    "@solana/kit": { "optional": true },
+    "mppx": { "optional": true }
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.3.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

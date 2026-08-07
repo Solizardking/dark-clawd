@@ -1,0 +1,39 @@
+# Dark Clawd Fly Machine — sandbox API for agents + automations + Solana MPP
+#
+# First time (app must exist before `fly deploy`):
+#   fly apps create dark-clawd-sandbox
+#   fly deploy
+#
+# Public URL: https://dark-clawd-sandbox.fly.dev
+# Hub:        https://cheshireterminal.ai/dark-clawd
+
+app = "dark-clawd-sandbox"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  CLAWD_SANDBOX_MODE = "fly"
+  HOST = "0.0.0.0"
+  PORT = "18790"
+
+[http_service]
+  internal_port = 18790
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

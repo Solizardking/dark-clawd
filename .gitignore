@@ -1,0 +1,47 @@
+# ----------------------------------------------------------------------------
+# Secrets — NEVER commit
+# ----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.template
+!.env.sample
+.keys/
+**/.keys/
+*.pem
+*.key
+*.p12
+*.pfx
+wallet.json
+*-wallet.json
+keypair.json
+*-keypair.json
+solana-keygen.json
+credentials.json
+service-account*.json
+
+# Dependencies & build
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS / IDE
+.DS_Store
+**/.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Agent journals / local state
+agent/journal/*.jsonl
+**/.automaton/
