@@ -3,8 +3,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Solizardking/openclawd-dark-clawd"><img src="https://img.shields.io/github/stars/Solizardking/openclawd-dark-clawd?style=for-the-badge" alt="GitHub stars"></a>
-  <a href="https://github.com/Solizardking/openclawd-dark-clawd"><img src="https://img.shields.io/badge/GitHub-public-brightgreen?style=for-the-badge" alt="Public repo"></a>
+  <a href="https://github.com/Solizardking/dark-clawd"><img src="https://img.shields.io/github/stars/Solizardking/dark-clawd?style=for-the-badge" alt="GitHub stars"></a>
+  <a href="https://github.com/Solizardking/dark-clawd"><img src="https://img.shields.io/badge/GitHub-public-brightgreen?style=for-the-badge" alt="Public repo"></a>
+  <a href="https://www.npmjs.com/package/@openclawdsolana/dark-clawd"><img src="https://img.shields.io/npm/v/@openclawdsolana/dark-clawd?style=for-the-badge" alt="npm"></a>
+  <a href="https://cheshireterminal.ai/dark-clawd"><img src="https://img.shields.io/badge/Hub-cheshireterminal.ai-8A2BE2?style=for-the-badge" alt="Product hub"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
 
@@ -134,11 +136,19 @@
 
 Preferred package surface is **`tui/`** (`@openclawdsolana/dark-clawd`). Consumers only need **Node.js ≥18** — Bun is not required at install or runtime.
 
+| Surface | URL |
+|---------|-----|
+| **Product hub** | [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd) |
+| **GitHub** | [github.com/Solizardking/dark-clawd](https://github.com/Solizardking/dark-clawd) |
+| **npm** | [`@openclawdsolana/dark-clawd`](https://www.npmjs.com/package/@openclawdsolana/dark-clawd) |
+
 ```bash
 npm install -g @openclawdsolana/dark-clawd
+dark-clawd welcome     # first-run guide
 dark-clawd --help
 # aliases: clawd · clawd-tui
 dark-clawd status
+dark-clawd setup
 dark-clawd run
 ```
 
@@ -153,7 +163,7 @@ curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
 
 ```bash
 # Clone and run (public product repo)
-git clone https://github.com/Solizardking/openclawd-dark-clawd.git
+git clone https://github.com/Solizardking/dark-clawd.git
 cd dark-clawd
 bun install
 # optional: copy provider keys into .env

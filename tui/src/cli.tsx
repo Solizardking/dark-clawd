@@ -32,6 +32,14 @@ import {
   planAutomatonProxy,
   tryRunAutomatonEntrypoint,
 } from './services/automaton-bridge.js';
+import {
+  formatWelcomeBanner,
+  PACKAGE_VERSION,
+  PRODUCT_GITHUB_URL,
+  PRODUCT_HUB_URL,
+  PRODUCT_NAME,
+  productInfoRecord,
+} from './product.js';
 
 // Load environment variables
 dotenvConfig();
@@ -44,8 +52,14 @@ const program = new Command();
 
 program
   .name('dark-clawd')
-  .description('Dark Clawd TUI - Recursive Autonomous Solana Intelligence Agent')
-  .version('1.0.0');
+  .description(
+    `${PRODUCT_NAME} — recursive Solana intelligence TUI (hub: ${PRODUCT_HUB_URL})`,
+  )
+  .version(PACKAGE_VERSION)
+  .addHelpText(
+    'after',
+    `\nProduct hub: ${PRODUCT_HUB_URL}\nGitHub:      ${PRODUCT_GITHUB_URL}\n`,
+  );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Run Command
@@ -328,18 +342,13 @@ program
 
 program
   .command('info')
-  .description('Display system information')
+  .description('Display system and product information')
   .action(() => {
+    const cfg = loadConfigFromEnv();
     const info = {
-      name: 'Dark Clawd TUI',
-      version: '1.0.0',
-      runtime: `Bun ${Bun.version}`,
-      platform: `${process.platform} ${process.arch}`,
-      node: process.version,
-      site: loadConfigFromEnv().openclawd?.siteUrl || 'https://solanaclawd.com',
-      vault: loadConfigFromEnv().openclawd?.vaultUrl || 'https://solanaclawd.com/vault',
-      product: 'https://cheshireterminal.ai/dark-clawd',
-      install: 'curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash',
+      ...productInfoRecord(),
+      site: cfg.openclawd?.siteUrl || 'https://solanaclawd.com',
+      vault: cfg.openclawd?.vaultUrl || 'https://solanaclawd.com/vault',
     };
 
     console.log(
@@ -350,10 +359,25 @@ program
         {
           padding: 1,
           borderColor: 'green',
-          title: 'Dark Clawd Info',
+          title: `${PRODUCT_NAME} Info`,
           titleAlignment: 'center',
         }
       )
+    );
+  });
+
+program
+  .command('welcome')
+  .description('Friendly first-run guide (hub, GitHub, install, next steps)')
+  .action(() => {
+    console.log(
+      boxen(formatWelcomeBanner(), {
+        padding: 1,
+        borderColor: 'magenta',
+        borderStyle: 'round',
+        title: `${PRODUCT_NAME} · first release`,
+        titleAlignment: 'center',
+      }),
     );
   });
 
@@ -551,7 +575,8 @@ program
     console.log(chalk.gray(`  kit          GET  /api/kit`));
     console.log(chalk.gray(`  automations  GET  /api/automations`));
     console.log(chalk.gray(`  trade plan   POST /api/trade/plan`));
-    console.log(chalk.cyan(`\n  Product hub: https://cheshireterminal.ai/dark-clawd\n`));
+    console.log(chalk.cyan(`\n  Product hub: ${PRODUCT_HUB_URL}`));
+    console.log(chalk.gray(`  GitHub:      ${PRODUCT_GITHUB_URL}\n`));
     console.log(JSON.stringify(buildAutomationKitManifest({ sandboxBase: `http://${host}:${port}` }), null, 2));
   });
 

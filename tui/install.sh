@@ -1,32 +1,50 @@
 #!/usr/bin/env bash
-# Dark Clawd one-shot installer
+# Dark Clawd one-shot installer (first release)
 # curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
+# Source: https://github.com/Solizardking/dark-clawd  ·  Hub: https://cheshireterminal.ai/dark-clawd
 set -euo pipefail
 
 PRODUCT_URL="${CLAWD_PRODUCT_URL:-https://cheshireterminal.ai/dark-clawd}"
+GITHUB_URL="${CLAWD_GITHUB_URL:-https://github.com/Solizardking/dark-clawd}"
 PKG="${CLAWD_NPM_PACKAGE:-@openclawdsolana/dark-clawd}"
 BIN_DIR="${CLAWD_BIN_DIR:-$HOME/.local/bin}"
 INSTALL_MODE="${CLAWD_INSTALL_MODE:-npm}" # npm | bun | npx-only
 
 echo ""
 echo "🦞 Dark Clawd — recursive Solana + Robinhood automation TUI"
-echo "   Product: $PRODUCT_URL"
+echo "   Hub:    $PRODUCT_URL"
+echo "   GitHub: $GITHUB_URL"
+echo "   npm:    $PKG"
 echo ""
 
 need_cmd() {
   command -v "$1" >/dev/null 2>&1 || return 1
 }
 
+have_node18() {
+  need_cmd node || return 1
+  node -e 'const m=process.versions.node.split(".")[0]|0; process.exit(m>=18?0:1)' 2>/dev/null
+}
+
 mkdir -p "$BIN_DIR"
 
 install_with_npm() {
   if need_cmd npm; then
+    if ! have_node18; then
+      echo "⚠ Node.js ≥18 recommended (found: $(node -v 2>/dev/null || echo none))"
+    fi
     echo "→ npm install -g $PKG"
-    npm install -g "$PKG" || {
-      echo "⚠ global npm install failed; trying user prefix..."
-      npm install -g --prefix "$HOME/.darkclawd" "$PKG"
-      export PATH="$HOME/.darkclawd/bin:$PATH"
-    }
+    if npm install -g "$PKG"; then
+      return 0
+    fi
+    echo "⚠ global npm install failed; trying user prefix ~/.darkclawd ..."
+    npm install -g --prefix "$HOME/.darkclawd" "$PKG"
+    export PATH="$HOME/.darkclawd/bin:$PATH"
+    # Persist path hint
+    if [[ -d "$HOME/.darkclawd/bin" ]]; then
+      ln -sfn "$HOME/.darkclawd/bin/dark-clawd" "$BIN_DIR/dark-clawd" 2>/dev/null || true
+      ln -sfn "$HOME/.darkclawd/bin/clawd" "$BIN_DIR/clawd" 2>/dev/null || true
+    fi
     return 0
   fi
   return 1
@@ -53,7 +71,7 @@ case "$INSTALL_MODE" in
     ;;
 esac
 
-# Ensure wrapper for npx fallback
+# Ensure wrapper for npx fallback when global bin is missing
 WRAPPER="$BIN_DIR/dark-clawd"
 if ! need_cmd dark-clawd; then
   cat > "$WRAPPER" <<EOF
@@ -61,14 +79,14 @@ if ! need_cmd dark-clawd; then
 exec npx --yes ${PKG} "\$@"
 EOF
   chmod +x "$WRAPPER"
-  echo "→ installed wrapper: $WRAPPER"
+  echo "→ installed npx wrapper: $WRAPPER"
 fi
 
 # Config dir
 mkdir -p "${HOME}/.darkclawd"
 if [[ ! -f "${HOME}/.darkclawd/config.env.example" ]]; then
   cat > "${HOME}/.darkclawd/config.env.example" <<'ENV'
-# Dark Clawd environment
+# Dark Clawd environment (copy to ~/.darkclawd/config.env or project .env)
 HELIUS_API_KEY=
 BIRDEYE_API_KEY=
 XAI_API_KEY=
@@ -81,17 +99,27 @@ ENV
 fi
 
 echo ""
-echo "✓ Dark Clawd ready"
+if need_cmd dark-clawd; then
+  echo "✓ Dark Clawd ready"
+  dark-clawd welcome 2>/dev/null || true
+else
+  echo "✓ Install finished (use npx if PATH is not set yet)"
+fi
 echo ""
 echo "  Help:     dark-clawd --help   (or: npx $PKG --help)"
-echo "  TUI:      dark-clawd run"
+echo "  Welcome:  dark-clawd welcome"
 echo "  Status:   dark-clawd status"
+echo "  Setup:    dark-clawd setup"
+echo "  TUI:      dark-clawd run"
 echo "  Sandbox:  dark-clawd sandbox"
-echo "  Trade:    dark-clawd trade --chain solana --token <mint> --side buy --amount 0.1"
-echo "  Auto:     dark-clawd automate create --name dca --chain solana --token <mint> --amount 0.05"
 echo ""
 echo "  Hub:      $PRODUCT_URL"
-echo "  Fly:      dark-clawd sandbox  # then fly deploy with package fly.toml"
+echo "  GitHub:   $GITHUB_URL"
+echo "  Issues:   $GITHUB_URL/issues"
 echo ""
-echo "Add to PATH if needed:  export PATH=\"$BIN_DIR:\$PATH\""
+echo "Add to PATH if needed:"
+echo "  export PATH=\"$BIN_DIR:\$PATH\""
+if [[ -d "$HOME/.darkclawd/bin" ]]; then
+  echo "  export PATH=\"$HOME/.darkclawd/bin:\$PATH\""
+fi
 echo ""

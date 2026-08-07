@@ -3,6 +3,15 @@
 // Paper plans by default; live execution is opt-in and key-gated.
 // ═══════════════════════════════════════════════════════════════════════════════
 
+import {
+  PACKAGE_NAME,
+  PRODUCT_GITHUB_URL,
+  PRODUCT_HUB_URL,
+  PRODUCT_INSTALL_CURL,
+  PRODUCT_NPM_INSTALL,
+  PRODUCT_NPX_HELP,
+} from '../product.js';
+
 export type TradeChain = 'solana' | 'robinhood';
 export type TradeSide = 'buy' | 'sell';
 export type TradeMode = 'paper' | 'live';
@@ -66,6 +75,7 @@ export interface AutomationJob {
 export interface AutomationKitManifest {
   product: string;
   version: string;
+  package: string;
   chains: TradeChain[];
   modes: TradeMode[];
   install: {
@@ -80,6 +90,7 @@ export interface AutomationKitManifest {
     tradePlan: string;
   };
   productUrl: string;
+  githubUrl: string;
   flyHint: string;
 }
 
@@ -87,11 +98,12 @@ const SOLANA_QUOTE = 'So11111111111111111111111111111111111111112'; // wSOL
 const USDC_SOL = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
 const RH_USDC = '0x0000000000000000000000000000000000000000'; // placeholder stable
 
-export const DARK_CLAWD_PRODUCT_URL = 'https://cheshireterminal.ai/dark-clawd';
-export const DARK_CLAWD_INSTALL_CURL =
-  'curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash';
-export const DARK_CLAWD_NPM = 'npm install -g @openclawdsolana/dark-clawd';
-export const DARK_CLAWD_NPX = 'npx @openclawdsolana/dark-clawd --help';
+export const DARK_CLAWD_PRODUCT_URL = PRODUCT_HUB_URL;
+export const DARK_CLAWD_GITHUB_URL = PRODUCT_GITHUB_URL;
+export const DARK_CLAWD_INSTALL_CURL = PRODUCT_INSTALL_CURL;
+export const DARK_CLAWD_NPM = PRODUCT_NPM_INSTALL;
+export const DARK_CLAWD_NPX = PRODUCT_NPX_HELP;
+export const DARK_CLAWD_PACKAGE = PACKAGE_NAME;
 
 function uid(prefix = 'plan'): string {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -121,6 +133,7 @@ export function buildAutomationKitManifest(opts?: {
   return {
     product: 'Dark Clawd Automation Kit',
     version: opts?.version || '1.0.0',
+    package: DARK_CLAWD_PACKAGE,
     chains: ['solana', 'robinhood'],
     modes: ['paper', 'live'],
     install: {
@@ -135,6 +148,7 @@ export function buildAutomationKitManifest(opts?: {
       tradePlan: `${base}/api/trade/plan`,
     },
     productUrl: DARK_CLAWD_PRODUCT_URL,
+    githubUrl: DARK_CLAWD_GITHUB_URL,
     flyHint: 'fly launch --config fly.toml && fly deploy',
   };
 }

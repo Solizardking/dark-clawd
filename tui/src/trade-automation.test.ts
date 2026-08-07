@@ -77,10 +77,13 @@ describe('trade automation kit', () => {
     expect(reg.list()).toHaveLength(1);
   });
 
-  test('kit manifest points at cheshire install + product', () => {
+  test('kit manifest points at cheshire install + github product', () => {
     const kit = buildAutomationKitManifest({ sandboxBase: 'http://127.0.0.1:18790' });
     expect(kit.productUrl).toBe(DARK_CLAWD_PRODUCT_URL);
+    expect(kit.githubUrl).toBe('https://github.com/Solizardking/dark-clawd');
+    expect(kit.package).toBe('@openclawdsolana/dark-clawd');
     expect(kit.install.curl).toBe(DARK_CLAWD_INSTALL_CURL);
+    expect(kit.install.npm).toContain('@openclawdsolana/dark-clawd');
     expect(kit.sandbox.health).toContain('/health');
     expect(kit.chains).toContain('solana');
     expect(kit.chains).toContain('robinhood');

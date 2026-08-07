@@ -69,13 +69,21 @@ See also monorepo docs: [`../docs/AUTOMATON_INTEGRATION.md`](../docs/AUTOMATON_I
 
 ### One-shot install via npm (recommended)
 
+| Surface | Link |
+|---------|------|
+| Hub | [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd) |
+| GitHub | [github.com/Solizardking/dark-clawd](https://github.com/Solizardking/dark-clawd) |
+| npm | [`@openclawdsolana/dark-clawd`](https://www.npmjs.com/package/@openclawdsolana/dark-clawd) |
+
 ```bash
 # Global install (Node.js ≥18; Bun not required at runtime)
 npm install -g @openclawdsolana/dark-clawd
 
 # Bins: dark-clawd · clawd · clawd-tui
+dark-clawd welcome     # friendly first-run guide
 dark-clawd --help
 dark-clawd status
+dark-clawd setup
 dark-clawd run
 ```
 
@@ -84,10 +92,8 @@ Or use the installer script (prefers npm, falls back to bun / npx):
 ```bash
 curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
 # local copy: bash install.sh
-dark-clawd --help
+dark-clawd welcome
 ```
-
-Hub: **[https://cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd)**
 
 ### From source (maintainers)
 

@@ -1,7 +1,7 @@
 {
   "name": "@openclawdsolana/dark-clawd",
   "version": "1.0.0",
-  "description": "OpenClawd Dark Clawd TUI - recursive Solana intelligence agent with Bloomberg-style terminal interface",
+  "description": "Dark Clawd — autonomous Solana terminal intelligence (Bloomberg-style TUI + automation). Hub: cheshireterminal.ai/dark-clawd",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -15,9 +15,10 @@
   "scripts": {
     "dev": "bun run src/cli.tsx",
     "copy:wasm": "sh -c 'mkdir -p dist && if [ -f node_modules/yoga-wasm-web/dist/yoga.wasm ]; then cp node_modules/yoga-wasm-web/dist/yoga.wasm dist/yoga.wasm; else cp ../node_modules/yoga-wasm-web/dist/yoga.wasm dist/yoga.wasm; fi'",
+    "fix:shebang": "node tui/scripts/fix-shebang.mjs dist/cli.js || node scripts/fix-shebang.mjs dist/cli.js || true",
     "build": "bun build src/cli.tsx --outdir dist --target node && bun run copy:wasm",
     "build:lib": "bun build src/index.ts --outdir dist --target node && bun run copy:wasm",
-    "start": "bun run dist/cli.js",
+    "start": "node dist/cli.js",
     "run": "bun run src/cli.tsx run",
     "setup": "bun run src/cli.tsx setup",
     "status": "bun run src/cli.tsx status",
@@ -104,14 +105,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Solizardking/openclawd-dark-clawd.git"
+    "url": "git+https://github.com/Solizardking/dark-clawd.git"
   },
+  "homepage": "https://cheshireterminal.ai/dark-clawd",
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
   "bugs": {
-    "url": "https://github.com/Solizardking/openclawd-dark-clawd/issues"
+    "url": "https://github.com/Solizardking/dark-clawd/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
