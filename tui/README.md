@@ -131,6 +131,14 @@ bun run automaton:status
 bun run automaton:constitution
 bun run automaton:paths
 
+# SOL GPT tool catalog (171 tools — Phoenix, Imperial, Birdeye, Helius, Solana Tracker, …)
+dark-clawd tools
+dark-clawd tools list --group phoenix
+dark-clawd tools search wallet
+dark-clawd tools run get_price --arg mint=<MINT>
+dark-clawd tools run search_tools --arg query=imperial
+# Docs: ../docs/SOL_GPT_TOOLS.md
+
 # Automation kit
 dark-clawd trade --chain solana --token <mint> --side buy --amount 0.1
 dark-clawd trade --chain robinhood --token 0x… --side buy --amount 10

@@ -51,6 +51,7 @@ export function formatWelcomeBanner(): string {
     '  dark-clawd --help',
     '  dark-clawd status',
     '  dark-clawd setup',
+    '  dark-clawd tools          # 171 SOL GPT tools',
     '  dark-clawd run',
     '',
     `Bins:    ${bins}`,

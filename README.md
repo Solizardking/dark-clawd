@@ -469,8 +469,31 @@ After each agent run, a PnL summary is output:
 
 ---
 
+## 🧰 SOL GPT TOOL CATALOG (171)
+
+Dark Clawd ships the full **SOL GPT** non-custodial tool surface (research + user-signed prepare):
+
+| Group | Count |
+|-------|------:|
+| Phoenix Eternal | 23 |
+| Imperial router | 32 |
+| Market / OHLCV / Wallet / Helius | 18+10+4+8 |
+| Solana Tracker (+ DAS + RPC) | 60 |
+| Trading · Prediction · Browser · Agents · Platform | 5+3+4+2+2 |
+| **Total** | **171** (122 core) |
+
+```bash
+dark-clawd tools
+dark-clawd tools list --group imperial
+dark-clawd tools run list_phoenix_markets
+dark-clawd tools run search_tools --arg query=wallet
+```
+
+See [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md).
+
 ## 📚 DOCUMENTATION
 
+- [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md) — SOL GPT 171-tool catalog + CLI
 - [`docs/BIRDEYE_INTEGRATION.md`](docs/BIRDEYE_INTEGRATION.md) — Birdeye market data setup
 - [`docs/OPENCLAWD_ADAPTATION.md`](docs/OPENCLAWD_ADAPTATION.md) — OpenClawd adaptation guide
 - [`docs/AUTOMATON_INTEGRATION.md`](docs/AUTOMATON_INTEGRATION.md) — Automaton sovereign runtime bridge
