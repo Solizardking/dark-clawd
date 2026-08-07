@@ -49,6 +49,13 @@ import {
   toolsByGroup,
   type ToolGroupId,
 } from './tools/index.js';
+import {
+  formatAgentBanner,
+  OpenRouterAgentHarness,
+  type AgentEvent,
+} from './agent/openrouter-harness.js';
+import * as readline from 'node:readline/promises';
+import { stdin as input, stdout as output } from 'node:process';
 
 // Load environment variables
 dotenvConfig();
@@ -739,11 +746,122 @@ toolsCmd.action(() => {
         '  dark-clawd tools catalog',
         '  dark-clawd tools run get_price --arg mint=<MINT>',
         '  dark-clawd tools run search_tools --arg query=phoenix',
+        '  dark-clawd agent              # OpenRouter tool loop',
       ].join('\n'),
       { padding: 1, borderColor: 'magenta', title: '171 tools', titleAlignment: 'center' },
     ),
   );
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OpenRouter agent harness (tool loop over SOL GPT catalog)
+// ─────────────────────────────────────────────────────────────────────────────
+
+program
+  .command('agent')
+  .description('OpenRouter agent harness — multi-turn tool loop over the 171 SOL GPT tools')
+  .option('-m, --model <id>', 'OpenRouter model id', process.env.OPENROUTER_DEFAULT_MODEL || process.env.OPENROUTER_MODEL || 'poolside/laguna-s-2.1:free')
+  .option('--max-steps <n>', 'Max model↔tool steps per turn', (v) => parseInt(v, 10), 8)
+  .option('--wallet <address>', 'Default wallet for portfolio/perps tools')
+  .option('-p, --prompt <text>', 'One-shot prompt (non-interactive)')
+  .option('-q, --quiet', 'Less tool display noise')
+  .action(async (options) => {
+    const model = options.model as string;
+    const apiKey = process.env.OPENROUTER_API_KEY || '';
+    if (!apiKey) {
+      console.error(chalk.red('OPENROUTER_API_KEY is required for dark-clawd agent'));
+      console.error(chalk.gray('  export OPENROUTER_API_KEY=sk-or-…'));
+      console.error(chalk.gray('  Get a key: https://openrouter.ai/settings/keys'));
+      process.exitCode = 1;
+      return;
+    }
+
+    const onEvent = (ev: AgentEvent) => {
+      if (options.quiet && (ev.type === 'step' || ev.type === 'usage')) return;
+      if (ev.type === 'step') {
+        console.log(chalk.gray(`── step ${ev.step}/${ev.maxSteps} ──`));
+      } else if (ev.type === 'tool_start') {
+        console.log(chalk.cyan(`  ⚙ ${ev.name}`) + chalk.gray(` ${JSON.stringify(ev.args).slice(0, 120)}`));
+      } else if (ev.type === 'tool_end') {
+        const mark = ev.ok ? chalk.green('✓') : chalk.red('✗');
+        console.log(`  ${mark} ${ev.name} ${chalk.gray(ev.summary.slice(0, 160))}`);
+      } else if (ev.type === 'usage') {
+        console.log(
+          chalk.gray(
+            `  tokens in=${ev.promptTokens ?? '?'} out=${ev.completionTokens ?? '?'} model=${ev.model || model}`,
+          ),
+        );
+      } else if (ev.type === 'error') {
+        console.error(chalk.red(`  error: ${ev.error}`));
+      } else if (ev.type === 'text' && !options.prompt) {
+        // printed after run in REPL
+      }
+    };
+
+    const harness = new OpenRouterAgentHarness({
+      apiKey,
+      model,
+      maxSteps: options.maxSteps,
+      wallet: options.wallet || process.env.SOLANA_WALLET,
+      onEvent,
+    });
+
+    console.log(
+      boxen(formatAgentBanner(model), {
+        padding: 1,
+        borderColor: 'green',
+        borderStyle: 'round',
+        title: 'agent harness',
+        titleAlignment: 'center',
+      }),
+    );
+
+    if (options.prompt) {
+      try {
+        const text = await harness.run(String(options.prompt));
+        console.log('\n' + chalk.white(text) + '\n');
+      } catch (e) {
+        console.error(chalk.red(e instanceof Error ? e.message : String(e)));
+        process.exitCode = 1;
+      }
+      return;
+    }
+
+    const rl = readline.createInterface({ input, output, terminal: true });
+    console.log(chalk.gray('Type a message (or /exit). Example: What is SOL doing? Use tools.\n'));
+    try {
+      for (;;) {
+        const line = (await rl.question(chalk.magenta('clawd › '))).trim();
+        if (!line) continue;
+        if (line === '/exit' || line === '/quit' || line === 'exit') break;
+        if (line === '/help') {
+          console.log(
+            chalk.gray(
+              '  /tools — catalog summary\n  /exit — quit\n  otherwise: chat with tools via OpenRouter\n',
+            ),
+          );
+          continue;
+        }
+        if (line === '/tools' || line.startsWith('/tools ')) {
+          const catalog = getSolGptShippedToolCatalog();
+          console.log(
+            chalk.green(
+              `  ${catalog.total} tools · ${catalog.core} core · groups: ${catalog.groups.map((g) => g.id).join(', ')}`,
+            ),
+          );
+          continue;
+        }
+        try {
+          const text = await harness.run(line);
+          console.log('\n' + chalk.whiteBright(text) + '\n');
+        } catch (e) {
+          console.error(chalk.red(e instanceof Error ? e.message : String(e)));
+        }
+      }
+    } finally {
+      rl.close();
+    }
+  });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Default Command (run)

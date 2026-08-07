@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.0 — SOL GPT tools + OpenRouter agent harness
+
+- **171 SOL GPT tools** shipped (`dark-clawd tools`) — Phoenix, Imperial, market, OHLCV, wallet, Helius, Solana Tracker (60), trading, prediction, browser, agents, platform
+- **OpenRouter agent harness** (`dark-clawd agent`) — multi-turn tool loop with core tools always loaded, `search_tools` for specialty, max-steps stop condition
+- Non-custodial `prepare_*` plans; install.sh documents tools + agent + env keys
+- Product hub: https://cheshireterminal.ai/dark-clawd · GitHub: https://github.com/Solizardking/dark-clawd
+
+```bash
+npm install -g @x402solana/dark-clawd
+dark-clawd tools
+dark-clawd agent
+```
+
 ## 1.0.0 — First public release
 
 **Product hub:** [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd)  

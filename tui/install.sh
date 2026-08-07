@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
-# Dark Clawd one-shot installer (first release)
-# curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
-# Source: https://github.com/Solizardking/dark-clawd
+# Dark Clawd one-shot installer
+# curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
 # Hub:    https://cheshireterminal.ai/dark-clawd
+# GitHub: https://github.com/Solizardking/dark-clawd
 set -euo pipefail
 
 PRODUCT_URL="${CLAWD_PRODUCT_URL:-https://cheshireterminal.ai/dark-clawd}"
 GITHUB_URL="${CLAWD_GITHUB_URL:-https://github.com/Solizardking/dark-clawd}"
 PKG="${CLAWD_NPM_PACKAGE:-@x402solana/dark-clawd}"
-VERSION="${CLAWD_VERSION:-1.0.0}"
-# Prebuilt npm tarball attached to the GitHub release (works without npm OTP publish)
+VERSION="${CLAWD_VERSION:-1.1.0}"
 TGZ_URL="${CLAWD_TGZ_URL:-https://github.com/Solizardking/dark-clawd/releases/download/v${VERSION}/x402solana-dark-clawd-${VERSION}.tgz}"
 BIN_DIR="${CLAWD_BIN_DIR:-$HOME/.local/bin}"
 INSTALL_MODE="${CLAWD_INSTALL_MODE:-auto}" # auto | npm | tgz | bun | npx-only
 USER_PREFIX="${CLAWD_PREFIX:-$HOME/.darkclawd}"
 
 echo ""
-echo "🦞 Dark Clawd — recursive Solana + Robinhood automation TUI"
+echo "🦞 Dark Clawd — Solana terminal intelligence + 171 SOL GPT tools"
 echo "   Hub:     $PRODUCT_URL"
 echo "   GitHub:  $GITHUB_URL"
 echo "   npm:     $PKG"
 echo "   release: v$VERSION"
+echo "   tools:   171 (122 core) · Phoenix · Imperial · Tracker · Helius · Birdeye"
 echo ""
 
 need_cmd() {
@@ -51,12 +51,12 @@ install_with_npm_registry() {
   if ! have_node18; then
     echo "⚠ Node.js ≥18 recommended (found: $(node -v 2>/dev/null || echo none))"
   fi
-  echo "→ npm install -g $PKG"
-  if npm install -g "$PKG" 2>/dev/null; then
+  echo "→ npm install -g $PKG@$VERSION"
+  if npm install -g "$PKG@$VERSION" 2>/dev/null || npm install -g "$PKG" 2>/dev/null; then
     return 0
   fi
   echo "⚠ global registry install failed; trying user prefix $USER_PREFIX ..."
-  if npm install -g --prefix "$USER_PREFIX" "$PKG" 2>/dev/null; then
+  if npm install -g --prefix "$USER_PREFIX" "$PKG@$VERSION" 2>/dev/null || npm install -g --prefix "$USER_PREFIX" "$PKG" 2>/dev/null; then
     link_bins_from_prefix "$USER_PREFIX"
     return 0
   fi
@@ -99,17 +99,14 @@ case "$INSTALL_MODE" in
     echo "→ npx-only mode (no global install)"
     ;;
   *)
-    # Prefer registry; fall back to GitHub release asset (always works for v1.0.0)
     install_with_npm_registry || install_with_tarball || install_with_bun || true
     ;;
 esac
 
-# Ensure wrapper for npx fallback when global bin is missing
 if ! need_cmd dark-clawd; then
   WRAPPER="$BIN_DIR/dark-clawd"
   cat > "$WRAPPER" <<EOF
 #!/usr/bin/env bash
-# Dark Clawd npx fallback — prefers release tarball when registry package is missing
 if npm view ${PKG} version >/dev/null 2>&1; then
   exec npx --yes ${PKG} "\$@"
 fi
@@ -119,17 +116,39 @@ EOF
   echo "→ installed launcher: $WRAPPER"
 fi
 
-# Config dir
 mkdir -p "${HOME}/.darkclawd"
 if [[ ! -f "${HOME}/.darkclawd/config.env.example" ]]; then
   cat > "${HOME}/.darkclawd/config.env.example" <<'ENV'
 # Dark Clawd environment (copy to ~/.darkclawd/config.env or project .env)
-HELIUS_API_KEY=
-BIRDEYE_API_KEY=
-XAI_API_KEY=
+
+# —— Models / agent harness ——
 OPENROUTER_API_KEY=
+OPENROUTER_DEFAULT_MODEL=poolside/laguna-s-2.1:free
+OPENROUTER_MODEL=
+XAI_API_KEY=
+PERPLEXITY_API_KEY=
+MOONSHOT_API_KEY=
+
+# —— Market / chain data ——
+HELIUS_API_KEY=
+HELIUS_RPC_URL=
+BIRDEYE_API_KEY=
 SOLANA_RPC_URL=
-SOLANA_PRIVATE_KEY=
+SOLANA_WALLET=
+PHOENIX_API_URL=https://perp-api.phoenix.trade
+IMPERIAL_API_BASE=https://api.imperial.space/api/v1
+
+# —— Solana Tracker (60 tools) ——
+SOLANA_TRACKER_API_KEY=
+SOLANA_TRACKER_DATA_API_KEY=
+SOLANA_TRACKER_RPC_URL=
+SOLANA_TRACKER_RPC_API_KEY=
+
+# —— Optional ——
+DFLOW_API_URL=
+BROWSER_USE_API_KEY=
+NEWS_API_KEY=
+SERP_API_KEY=
 CLAWD_AUTO_MODE=true
 CLAWD_SANDBOX_PORT=18790
 ENV
@@ -142,22 +161,35 @@ if need_cmd dark-clawd; then
 else
   echo "✓ Install finished — add PATH or use npx (see below)"
 fi
+
 echo ""
-echo "  Help:     dark-clawd --help"
-echo "  Welcome:  dark-clawd welcome"
-echo "  Status:   dark-clawd status"
-echo "  Setup:    dark-clawd setup"
-echo "  TUI:      dark-clawd run"
+echo "╔══════════════════════════════════════════════════════════════════╗"
+echo "║  Quick start                                                     ║"
+echo "╠══════════════════════════════════════════════════════════════════╣"
+echo "║  dark-clawd --help                                               ║"
+echo "║  dark-clawd welcome                                              ║"
+echo "║  dark-clawd status                                               ║"
+echo "║  dark-clawd setup                                                ║"
+echo "║  dark-clawd tools                 # 171 SOL GPT tools            ║"
+echo "║  dark-clawd tools list --group phoenix                           ║"
+echo "║  dark-clawd tools search wallet                                  ║"
+echo "║  dark-clawd tools run get_price --arg mint=<MINT>                ║"
+echo "║  dark-clawd agent                 # OpenRouter tool loop         ║"
+echo "║  dark-clawd run                   # Bloomberg TUI                ║"
+echo "╠══════════════════════════════════════════════════════════════════╣"
+echo "║  Tool groups (171):                                              ║"
+echo "║   phoenix 23 · imperial 32 · market 18 · ohlcv 10 · wallet 4     ║"
+echo "║   helius 8 · solanatracker 60 · trading 5 · prediction 3         ║"
+echo "║   browser 4 · agents 2 · platform 2  (122 core always-on set)    ║"
+echo "║  Custody: prepare_* is user-signed only — never paste keys       ║"
+echo "╚══════════════════════════════════════════════════════════════════╝"
 echo ""
 echo "  Hub:      $PRODUCT_URL"
 echo "  GitHub:   $GITHUB_URL"
+echo "  npm:      npm install -g $PKG"
+echo "  Docs:     $GITHUB_URL/blob/main/docs/SOL_GPT_TOOLS.md"
 echo "  Release:  $GITHUB_URL/releases/tag/v$VERSION"
-echo "  Issues:   $GITHUB_URL/issues"
 echo ""
-echo "Manual install (GitHub release tarball):"
-echo "  npm install -g $TGZ_URL"
-echo ""
-echo "PATH tips:"
 echo "  export PATH=\"$BIN_DIR:\$PATH\""
 if [[ -d "$USER_PREFIX/bin" ]]; then
   echo "  export PATH=\"$USER_PREFIX/bin:\$PATH\""

@@ -47,9 +47,23 @@ dark-clawd tools search wallet
 dark-clawd tools run search_tools --arg query=phoenix
 dark-clawd tools run get_price --arg mint=<MINT>
 dark-clawd tools run prepare_user_swap --arg inputMint=… --arg outputMint=… --arg amount=…
+
+# OpenRouter agent harness (core tools every turn + search_tools)
+export OPENROUTER_API_KEY=sk-or-…
+dark-clawd agent
+dark-clawd agent -m poolside/laguna-s-2.1:free -p "What is trending?"
+dark-clawd agent --wallet <addr> --max-steps 12
 ```
 
-## Agent chat
+### Agent harness
+
+- OpenRouter Chat Completions (`OPENROUTER_API_KEY`)
+- Loads **122 core tools** every turn (SOL GPT / Kimi style)
+- Specialty tools via `search_tools` then exact name
+- Stop condition: `--max-steps` (default 8)
+- Tool display: start/end lines (create-agent-tui-style)
+
+## Agent chat (TUI)
 
 ```
 /tools
@@ -61,6 +75,9 @@ dark-clawd tools run prepare_user_swap --arg inputMint=… --arg outputMint=… 
 ## Env (selected)
 
 ```bash
+OPENROUTER_API_KEY=              # dark-clawd agent
+OPENROUTER_DEFAULT_MODEL=poolside/laguna-s-2.1:free
+
 HELIUS_API_KEY=
 HELIUS_RPC_URL=
 BIRDEYE_API_KEY=

@@ -132,59 +132,54 @@
 
 ## 🚀 QUICK START
 
-### One-shot install (npm)
-
-Preferred package surface is **`tui/`** (`@x402solana/dark-clawd`). Consumers only need **Node.js ≥18** — Bun is not required at install or runtime.
+Preferred package surface is **`tui/`** (`@x402solana/dark-clawd` **v1.1.0**).  
+Consumers only need **Node.js ≥18** — Bun is not required at install or runtime.
 
 | Surface | URL |
 |---------|-----|
 | **Product hub** | [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd) |
 | **GitHub** | [github.com/Solizardking/dark-clawd](https://github.com/Solizardking/dark-clawd) |
 | **npm** | [`@x402solana/dark-clawd`](https://www.npmjs.com/package/@x402solana/dark-clawd) |
+| **Tools docs** | [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md) |
+
+### Install (npm)
 
 ```bash
-# One-shot from GitHub release asset (always works for v1.0.0)
-npm install -g https://github.com/Solizardking/dark-clawd/releases/download/v1.0.0/x402solana-dark-clawd-1.0.0.tgz
+npm install -g @x402solana/dark-clawd
 
-# Or from the npm registry (when published):
-# npm install -g @x402solana/dark-clawd
-
-dark-clawd welcome     # first-run guide
+# bins: dark-clawd · clawd · clawd-tui
+dark-clawd welcome
 dark-clawd --help
-# aliases: clawd · clawd-tui
 dark-clawd status
-dark-clawd setup
-dark-clawd run
+dark-clawd tools                 # 171 SOL GPT tools
+dark-clawd agent                 # OpenRouter multi-turn tool loop
+dark-clawd run                   # Bloomberg TUI
 ```
 
-Installer script (registry → GitHub tarball fallback):
+One-shot installer (registry → GitHub release tarball fallback):
 
 ```bash
-curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
-# or from a clone / release:
-bash tui/install.sh
-# or: curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
+# or: bash tui/install.sh
+```
+
+Release tarball (offline / mirror):
+
+```bash
+npm install -g https://github.com/Solizardking/dark-clawd/releases/download/v1.1.0/x402solana-dark-clawd-1.1.0.tgz
 ```
 
 ### Local Development
 
 ```bash
-# Clone and run (public product repo)
 git clone https://github.com/Solizardking/dark-clawd.git
 cd dark-clawd
 bun install
 # optional: copy provider keys into .env
 bun run run
-```
 
-### Preferred package surface (`tui/`)
-
-```bash
-cd tui
-bun install
-bun run build        # pack-ready dist (Node shebang on CLI bin)
-bun run run          # Dark Clawd TUI (dev)
-# after npm install -g: clawd · dark-clawd · clawd-tui
+# package surface
+cd tui && bun install && bun run build && bun run run
 ```
 
 ### Agent Loop (Python — Ralph OODA core)
@@ -210,20 +205,32 @@ python3 agent/loop.py --ticks 1000 --backtest path/to/candles.json
 ### CLI Commands
 
 ```
-╔══════════════════════════════════════════════════════════════════════╗
-║  clawd / dark-clawd       Start DARK CLAWD TUI                      ║
-║  clawd run --auto         Autonomous agent mode                     ║
-║  clawd run --interactive  Interactive mode                          ║
-║  clawd run --wallet <addr>  Attach wallet context                   ║
-║  clawd run --headless     Daemon mode (no TUI)                      ║
-║  bun run status           API configuration status                  ║
-║  bun run setup            Setup instructions                        ║
-║  bun run wallet --create  Create local wallet                       ║
-║  bun run wallet --balance Show wallet balance                       ║
-║  bun run wallet --address Show wallet address                       ║
-║                                                                      ║
-║  legacy root bins (pre-rebrand): ralph · dark-ralph · ralph-tui     ║
-╚══════════════════════════════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════════════════════╗
+║  dark-clawd / clawd / clawd-tui                                          ║
+║  ──────────────────────────────────────────────────────────────────────  ║
+║  dark-clawd run [--auto|--interactive|--wallet|--headless]   TUI        ║
+║  dark-clawd welcome                                          first-run  ║
+║  dark-clawd status · setup · info · wallet                   ops        ║
+║  dark-clawd tools · tools list|search|run|catalog            171 tools  ║
+║  dark-clawd agent [-m model] [-p prompt]                     OpenRouter ║
+║  dark-clawd trade · automate · sandbox · kit                 automation ║
+║  dark-clawd automaton status|constitution|paths              bridge     ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+```bash
+# Tools
+dark-clawd tools
+dark-clawd tools list --group phoenix
+dark-clawd tools search wallet
+dark-clawd tools run get_price --arg mint=<MINT>
+dark-clawd tools run search_tools --arg query=imperial
+
+# OpenRouter agent harness (requires OPENROUTER_API_KEY)
+export OPENROUTER_API_KEY=sk-or-…
+dark-clawd agent
+dark-clawd agent -m poolside/laguna-s-2.1:free -p "What is trending on Solana?"
+dark-clawd agent --wallet <addr> --max-steps 12
 ```
 
 ### TUI Keyboard Shortcuts
@@ -262,6 +269,9 @@ python3 agent/loop.py --ticks 1000 --backtest path/to/candles.json
 | `/stats` | Display system statistics |
 | `/automaton` | Automaton bridge status (sovereign runtime) |
 | `/automaton constitution` | Clawd Automaton constitution excerpt |
+| `/tools` | SOL GPT catalog summary (171 tools) |
+| `/tools search <q>` | Search catalog |
+| `/tools run <name> k=v` | Run one tool (non-custodial) |
 | `/mode <type>` | Switch auto / interactive |
 | `/clear` | Clear message history |
 
@@ -361,21 +371,33 @@ The **Clawd OODA Loop** (Observe–Orient–Decide–Act) is the beating heart �
 
 ### Configuration
 
-Create `.env` with your keys:
+Create `.env` (or `~/.darkclawd/config.env`) with your keys:
 
 ```env
+# —— Agent harness (OpenRouter) ——
+OPENROUTER_API_KEY=
+OPENROUTER_DEFAULT_MODEL=poolside/laguna-s-2.1:free
+OPENROUTER_MODEL=
+
+# —— Market / chain ——
 HELIUS_API_KEY=
 HELIUS_RPC_URL=
 BIRDEYE_API_KEY=
+SOLANA_WALLET=
+PHOENIX_API_URL=https://perp-api.phoenix.trade
+IMPERIAL_API_BASE=https://api.imperial.space/api/v1
+
+# —— Solana Tracker (60 tools) ——
+SOLANA_TRACKER_API_KEY=
+SOLANA_TRACKER_RPC_URL=
+
+# —— Optional AI / research ——
 XAI_API_KEY=
 PERPLEXITY_API_KEY=
-OPENROUTER_API_KEY=
-OPENROUTER_MODEL=minimax/minimax-m2.7
+MOONSHOT_API_KEY=
 NEWS_API_KEY=
 SERP_API_KEY=
-FINANCIAL_DATASET_API_KEY=
-PHOENIX_API_URL=https://perp-api.phoenix.trade
-PHOENIX_RPC_URL=https://api.mainnet-beta.solana.com
+BROWSER_USE_API_KEY=
 ```
 
 ---
@@ -471,25 +493,39 @@ After each agent run, a PnL summary is output:
 
 ## 🧰 SOL GPT TOOL CATALOG (171)
 
-Dark Clawd ships the full **SOL GPT** non-custodial tool surface (research + user-signed prepare):
+Dark Clawd ships the full **SOL GPT** non-custodial tool surface (research + user-signed prepare) — same catalog used by the OpenRouter agent harness.
 
-| Group | Count |
-|-------|------:|
-| Phoenix Eternal | 23 |
-| Imperial router | 32 |
-| Market / OHLCV / Wallet / Helius | 18+10+4+8 |
-| Solana Tracker (+ DAS + RPC) | 60 |
-| Trading · Prediction · Browser · Agents · Platform | 5+3+4+2+2 |
-| **Total** | **171** (122 core) |
+| Group | Id | Tools | Blurb |
+|-------|----|------:|-------|
+| **Phoenix Eternal** | `phoenix` | 23 | Perps research + user-signed trade prep |
+| **Imperial router** | `imperial` | 32 | Multi-venue perps intel (Jupiter / Flash / Phoenix / GMTrade) |
+| **Market data** | `market` | 18 | Prices, search, trending, memes, security |
+| **OHLCV & live tape** | `ohlcv` | 10 | Candles, live price, trades |
+| **Wallet & portfolio** | `wallet` | 4 | Net worth, PnL, assets, balances |
+| **Helius Wallet API** | `helius` | 8 | Identity, history, transfers, activity |
+| **Solana Tracker** | `solanatracker` | 60 | Portfolio, PnL, trending, DAS + RPC |
+| **Swaps & sends** | `trading` | 5 | Quotes + user-signed swap/transfer prep |
+| **Prediction markets** | `prediction` | 3 | DFlow / Kalshi read-only |
+| **Cloud browser** | `browser` | 4 | Browser Use research |
+| **Agents & DAS** | `agents` | 2 | Metaplex / agent discovery |
+| **Platform** | `platform` | 2 | `search_tools`, sponge status |
+| **Total** | | **171** | **122 core** · 49 specialty |
+
+### Execution model
+
+- **Research tools** → JSON only (HTTP / RPC).
+- **Live spends** → `prepare_user_*` / `prepare_phoenix_*` return **unsigned plans**; your wallet signs. Server never holds keys.
+- **Agent loop** → `dark-clawd agent` loads **core tools every turn** and uses `search_tools` for specialty (OpenRouter Chat Completions harness).
 
 ```bash
 dark-clawd tools
 dark-clawd tools list --group imperial
 dark-clawd tools run list_phoenix_markets
-dark-clawd tools run search_tools --arg query=wallet
+dark-clawd tools run prepare_user_swap --arg inputMint=… --arg outputMint=… --arg amount=…
+dark-clawd agent -p "Show Phoenix SOL-PERP mark and funding"
 ```
 
-See [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md).
+Full reference: [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md).
 
 ## 📚 DOCUMENTATION
 

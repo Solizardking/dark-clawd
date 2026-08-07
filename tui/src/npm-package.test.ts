@@ -53,15 +53,19 @@ describe('npm package surface (@x402solana/dark-clawd)', () => {
     expect(existsSync(fixShebang)).toBe(true);
   });
 
-  test('install.sh documents npm global install + hub + github release tarball', () => {
+  test('install.sh documents npm global install + hub + github + tools', () => {
     const sh = readFileSync(installSh, 'utf8');
     expect(sh).toContain('@x402solana/dark-clawd');
     expect(sh).toMatch(/npm install -g/);
     expect(sh).toContain('dark-clawd --help');
+    expect(sh).toContain('dark-clawd tools');
+    expect(sh).toContain('dark-clawd agent');
+    expect(sh).toContain('171');
     expect(sh).toContain('https://cheshireterminal.ai/dark-clawd');
     expect(sh).toContain('https://github.com/Solizardking/dark-clawd');
     expect(sh).toContain('releases/download/v');
     expect(sh).toContain('x402solana-dark-clawd-');
+    expect(sh).toContain('OPENROUTER_API_KEY');
   });
 
   test('fix-shebang.mjs rewrites bun shebang to node on a temp fixture', () => {

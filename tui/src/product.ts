@@ -4,9 +4,9 @@
  */
 export const PRODUCT_NAME = 'Dark Clawd';
 export const PRODUCT_TAGLINE =
-  'Autonomous Solana terminal intelligence — Bloomberg-style TUI + automation';
+  'Autonomous Solana terminal intelligence — Bloomberg TUI + 171 SOL GPT tools + OpenRouter agent harness';
 export const PACKAGE_NAME = '@x402solana/dark-clawd';
-export const PACKAGE_VERSION = '1.0.0';
+export const PACKAGE_VERSION = '1.1.0';
 
 export const PRODUCT_HUB_URL = 'https://cheshireterminal.ai/dark-clawd';
 export const PRODUCT_GITHUB_URL = 'https://github.com/Solizardking/dark-clawd';
@@ -43,15 +43,16 @@ export function formatWelcomeBanner(): string {
     `   ${PRODUCT_TAGLINE}`,
     '',
     'Install (Node ≥18):',
-    `  ${PRODUCT_NPM_INSTALL_TGZ}`,
-    `  # registry: ${PRODUCT_NPM_INSTALL}`,
+    `  ${PRODUCT_NPM_INSTALL}`,
     `  # or: ${PRODUCT_INSTALL_CURL_GITHUB}`,
+    `  # release tarball: ${PRODUCT_NPM_INSTALL_TGZ}`,
     '',
     'Quick start:',
     '  dark-clawd --help',
     '  dark-clawd status',
     '  dark-clawd setup',
     '  dark-clawd tools          # 171 SOL GPT tools',
+    '  dark-clawd agent          # OpenRouter multi-turn tool loop',
     '  dark-clawd run',
     '',
     `Bins:    ${bins}`,
