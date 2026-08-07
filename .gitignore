@@ -28,6 +28,7 @@ dist/
 .turbo/
 coverage/
 *.tsbuildinfo
+*.tgz
 
 # Python
 __pycache__/

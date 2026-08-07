@@ -67,23 +67,37 @@ See also monorepo docs: [`../docs/AUTOMATON_INTEGRATION.md`](../docs/AUTOMATON_I
 
 ## Quick Start
 
-### One-shot install (recommended)
+### One-shot install via npm (recommended)
+
+```bash
+# Global install (Node.js ≥18; Bun not required at runtime)
+npm install -g @openclawdsolana/dark-clawd
+
+# Bins: dark-clawd · clawd · clawd-tui
+dark-clawd --help
+dark-clawd status
+dark-clawd run
+```
+
+Or use the installer script (prefers npm, falls back to bun / npx):
 
 ```bash
 curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
+# local copy: bash install.sh
 dark-clawd --help
-dark-clawd run
 ```
 
 Hub: **[https://cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd)**
 
-### From source
+### From source (maintainers)
 
 ```bash
-cd tui   # package root
+cd tui   # package root (preferred npm surface)
 bun install
+bun run build          # produces dist/cli.js with Node shebang for npm bins
 cp .env.example .env
-bun run run
+bun run run            # dev: Bun runs TypeScript sources
+# after build: node dist/cli.js --help
 ```
 
 The TUI can boot without every key configured. Missing providers are shown as disconnected and their dependent commands fail closed.

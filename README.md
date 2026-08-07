@@ -130,13 +130,23 @@
 
 ## 🚀 QUICK START
 
-### Install & Launch
+### One-shot install (npm)
+
+Preferred package surface is **`tui/`** (`@openclawdsolana/dark-clawd`). Consumers only need **Node.js ≥18** — Bun is not required at install or runtime.
 
 ```bash
-# One-shot install (when published)
-curl -fsSL https://install.solanaclawd.com | bash
-clawd
-# aliases: dark-clawd · clawd-tui
+npm install -g @openclawdsolana/dark-clawd
+dark-clawd --help
+# aliases: clawd · clawd-tui
+dark-clawd status
+dark-clawd run
+```
+
+Installer script (npm-first):
+
+```bash
+curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
+# or from a clone: bash tui/install.sh
 ```
 
 ### Local Development
@@ -155,8 +165,9 @@ bun run run
 ```bash
 cd tui
 bun install
-bun run run          # Dark Clawd TUI
-# bins after install: clawd · dark-clawd · clawd-tui
+bun run build        # pack-ready dist (Node shebang on CLI bin)
+bun run run          # Dark Clawd TUI (dev)
+# after npm install -g: clawd · dark-clawd · clawd-tui
 ```
 
 ### Agent Loop (Python — Ralph OODA core)
