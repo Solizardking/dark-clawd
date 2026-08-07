@@ -12,6 +12,12 @@ import {
   captureAutomatonSnapshot,
   describeAutomatonSkill,
 } from '../skills/automaton-skill.js';
+import {
+  getSolGptShippedToolCatalog,
+  runSolGptTool,
+  searchTools,
+  SOL_GPT_TOOL_COUNT,
+} from '../tools/index.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -398,6 +404,11 @@ Sentiment: ${intelligence.sentiment.toUpperCase()}`,
         this.cmdAutomaton(args[0]);
         break;
 
+      case '/tools':
+      case '/tool':
+        await this.cmdTools(args);
+        break;
+
       case '/clear':
         this.emit('clearMessages');
         break;
@@ -431,11 +442,67 @@ Sentiment: ${intelligence.sentiment.toUpperCase()}`,
 ║ /prophecy     - Generate cryptic market prophecy         ║
 ║ /stats        - Display system statistics                ║
 ║ /automaton    - Automaton bridge status / constitution   ║
+║ /tools        - SOL GPT catalog (${SOL_GPT_TOOL_COUNT} tools) list/search/run  ║
+║ /tool <name>  - Run one catalog tool (non-custodial)     ║
 ║ /clear        - Clear terminal history                   ║
 ╠══════════════════════════════════════════════════════════╣
 ║ Or type naturally to chat with CLAWD                     ║
 ╚══════════════════════════════════════════════════════════╝`,
       'normal'
+    );
+  }
+
+  private async cmdTools(args: string[]): Promise<void> {
+    const sub = (args[0] || 'catalog').toLowerCase();
+    if (sub === 'catalog' || sub === 'list' || sub === 'groups') {
+      const catalog = getSolGptShippedToolCatalog();
+      const lines = catalog.groups.map((g) => `  ${String(g.count).padStart(3)}  ${g.id.padEnd(14)} ${g.title}`);
+      this.emitMessage(
+        'clawd',
+        `[TOOLS] SOL GPT catalog · ${catalog.total} shipped · ${catalog.core} core\n${lines.join('\n')}\nUse /tools search <q> · /tools run <name> key=value`,
+        'data',
+      );
+      return;
+    }
+    if (sub === 'search') {
+      const q = args.slice(1).join(' ');
+      const hits = searchTools(q, 15);
+      this.emitMessage(
+        'clawd',
+        `[TOOLS] search “${q}” → ${hits.length}\n${hits.map((t) => `  ${t.name} [${t.group}]`).join('\n')}`,
+        'data',
+      );
+      return;
+    }
+    if (sub === 'run' || getSolGptShippedToolCatalog().tools.some((t) => t.name === sub)) {
+      const name = sub === 'run' ? args[1] : sub;
+      const rest = sub === 'run' ? args.slice(2) : args.slice(1);
+      if (!name) {
+        this.emitMessage('clawd', '[TOOLS] Usage: /tools run <name> key=value …', 'error');
+        return;
+      }
+      const toolArgs: Record<string, unknown> = {};
+      for (const pair of rest) {
+        const i = pair.indexOf('=');
+        if (i > 0) toolArgs[pair.slice(0, i)] = pair.slice(i + 1);
+      }
+      if (this.config.walletAddress) toolArgs.wallet = this.config.walletAddress;
+      const result = await runSolGptTool({
+        tool: name,
+        args: toolArgs,
+        wallet: this.config.walletAddress,
+      });
+      this.emitMessage(
+        'clawd',
+        `[TOOL ${name}] ${result.ok ? 'ok' : 'fail'}\n${JSON.stringify(result, null, 2).slice(0, 3500)}`,
+        result.ok ? 'data' : 'error',
+      );
+      return;
+    }
+    this.emitMessage(
+      'clawd',
+      '[TOOLS] Usage: /tools | /tools search <q> | /tools run <name> key=value',
+      'normal',
     );
   }
 
