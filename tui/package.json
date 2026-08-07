@@ -1,6 +1,6 @@
 {
   "name": "@x402solana/dark-clawd",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Dark Clawd — Solana terminal intelligence: Bloomberg TUI, 171 SOL GPT tools, OpenRouter agent harness. Hub: cheshireterminal.ai/dark-clawd",
   "type": "module",
   "main": "dist/index.js",
