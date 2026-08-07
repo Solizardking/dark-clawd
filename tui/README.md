@@ -76,26 +76,24 @@ See also monorepo docs: [`../docs/AUTOMATON_INTEGRATION.md`](../docs/AUTOMATON_I
 | npm | [`@x402solana/dark-clawd`](https://www.npmjs.com/package/@x402solana/dark-clawd) |
 
 ```bash
-# Global install from GitHub release (Node.js ≥18; Bun not required)
-npm install -g https://github.com/Solizardking/dark-clawd/releases/download/v1.0.0/x402solana-dark-clawd-1.0.0.tgz
-
-# Registry (when available):
-# npm install -g @x402solana/dark-clawd
+# Global install (Node.js ≥18; Bun not required)
+npm install -g @x402solana/dark-clawd
 
 # Bins: dark-clawd · clawd · clawd-tui
-npm install -g @x402solana/dark-clawd
+dark-clawd welcome
 dark-clawd --help
 dark-clawd status
 dark-clawd setup
-dark-clawd run
+dark-clawd tools                 # 171 SOL GPT tools
+dark-clawd agent                 # OpenRouter tool loop (OPENROUTER_API_KEY)
+dark-clawd run                   # Bloomberg TUI
 ```
 
-Or use the installer script (registry → GitHub tarball → bun / npx):
+Installer (registry → GitHub tarball → bun / npx):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
-# local copy: bash install.sh
-dark-clawd welcome
+# local: bash install.sh
 ```
 
 ### From source (maintainers)
