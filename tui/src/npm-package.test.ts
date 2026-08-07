@@ -16,6 +16,7 @@ const installSh = join(root, 'install.sh');
 
 function loadPkg(): {
   name: string;
+  version: string;
   bin: Record<string, string>;
   files: string[];
   scripts: Record<string, string>;
@@ -114,7 +115,8 @@ describe('npm package surface (@x402solana/dark-clawd)', () => {
 
   test('npm pack tarball includes Node-shebang dist/cli.js and install-g --help works', () => {
     // Real pack path (prepack builds). Prefer existing tarball to keep CI fast when present.
-    const tarballName = 'x402solana-dark-clawd-1.0.0.tgz';
+    const pkg = loadPkg();
+    const tarballName = `x402solana-dark-clawd-${pkg.version}.tgz`;
     let tarball = join(root, tarballName);
     if (!existsSync(tarball)) {
       const pack = spawnSync('npm', ['pack'], {
@@ -123,7 +125,7 @@ describe('npm package surface (@x402solana/dark-clawd)', () => {
         env: process.env,
       });
       expect(pack.status).toBe(0);
-      expect(pack.stdout + pack.stderr).toMatch(/x402solana-dark-clawd-1\.0\.0\.tgz/);
+      expect(pack.stdout + pack.stderr).toContain(tarballName);
       tarball = join(root, tarballName);
     }
     expect(existsSync(tarball)).toBe(true);
