@@ -9,6 +9,7 @@ import {
   PRODUCT_HUB_URL,
   PRODUCT_INSTALL_CURL,
   PRODUCT_NPM_INSTALL,
+  PRODUCT_NPM_INSTALL_TGZ,
   PRODUCT_NPX_HELP,
 } from '../product.js';
 
@@ -81,6 +82,8 @@ export interface AutomationKitManifest {
   install: {
     curl: string;
     npm: string;
+    /** GitHub release tarball install (works before registry publish). */
+    tarball: string;
     npx: string;
   };
   sandbox: {
@@ -102,6 +105,7 @@ export const DARK_CLAWD_PRODUCT_URL = PRODUCT_HUB_URL;
 export const DARK_CLAWD_GITHUB_URL = PRODUCT_GITHUB_URL;
 export const DARK_CLAWD_INSTALL_CURL = PRODUCT_INSTALL_CURL;
 export const DARK_CLAWD_NPM = PRODUCT_NPM_INSTALL;
+export const DARK_CLAWD_NPM_TGZ = PRODUCT_NPM_INSTALL_TGZ;
 export const DARK_CLAWD_NPX = PRODUCT_NPX_HELP;
 export const DARK_CLAWD_PACKAGE = PACKAGE_NAME;
 
@@ -139,6 +143,7 @@ export function buildAutomationKitManifest(opts?: {
     install: {
       curl: DARK_CLAWD_INSTALL_CURL,
       npm: DARK_CLAWD_NPM,
+      tarball: DARK_CLAWD_NPM_TGZ,
       npx: DARK_CLAWD_NPX,
     },
     sandbox: {

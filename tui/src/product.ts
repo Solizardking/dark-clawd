@@ -5,7 +5,7 @@
 export const PRODUCT_NAME = 'Dark Clawd';
 export const PRODUCT_TAGLINE =
   'Autonomous Solana terminal intelligence — Bloomberg-style TUI + automation';
-export const PACKAGE_NAME = '@openclawdsolana/dark-clawd';
+export const PACKAGE_NAME = '@x402solana/dark-clawd';
 export const PACKAGE_VERSION = '1.0.0';
 
 export const PRODUCT_HUB_URL = 'https://cheshireterminal.ai/dark-clawd';
@@ -13,8 +13,14 @@ export const PRODUCT_GITHUB_URL = 'https://github.com/Solizardking/dark-clawd';
 export const PRODUCT_GITHUB_ISSUES_URL = `${PRODUCT_GITHUB_URL}/issues`;
 export const PRODUCT_INSTALL_SH_URL =
   'https://cheshireterminal.ai/api/dark-clawd/install.sh';
+export const PRODUCT_INSTALL_SH_GITHUB_URL =
+  'https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh';
 export const PRODUCT_INSTALL_CURL = `curl -fsSL ${PRODUCT_INSTALL_SH_URL} | bash`;
+export const PRODUCT_INSTALL_CURL_GITHUB = `curl -fsSL ${PRODUCT_INSTALL_SH_GITHUB_URL} | bash`;
+/** Prebuilt package attached to the GitHub release (works without registry publish). */
+export const PRODUCT_RELEASE_TGZ_URL = `https://github.com/Solizardking/dark-clawd/releases/download/v${PACKAGE_VERSION}/x402solana-dark-clawd-${PACKAGE_VERSION}.tgz`;
 export const PRODUCT_NPM_INSTALL = `npm install -g ${PACKAGE_NAME}`;
+export const PRODUCT_NPM_INSTALL_TGZ = `npm install -g ${PRODUCT_RELEASE_TGZ_URL}`;
 export const PRODUCT_NPX_HELP = `npx ${PACKAGE_NAME} --help`;
 
 /** Bins linked after a successful npm install. */
@@ -37,8 +43,9 @@ export function formatWelcomeBanner(): string {
     `   ${PRODUCT_TAGLINE}`,
     '',
     'Install (Node ≥18):',
-    `  ${PRODUCT_NPM_INSTALL}`,
-    `  # or: ${PRODUCT_INSTALL_CURL}`,
+    `  ${PRODUCT_NPM_INSTALL_TGZ}`,
+    `  # registry: ${PRODUCT_NPM_INSTALL}`,
+    `  # or: ${PRODUCT_INSTALL_CURL_GITHUB}`,
     '',
     'Quick start:',
     '  dark-clawd --help',
@@ -64,6 +71,7 @@ export function productInfoRecord(): Record<string, string> {
     hub: PRODUCT_HUB_URL,
     github: PRODUCT_GITHUB_URL,
     npm: PRODUCT_NPM_INSTALL,
-    install: PRODUCT_INSTALL_CURL,
+    tarball: PRODUCT_NPM_INSTALL_TGZ,
+    install: PRODUCT_INSTALL_CURL_GITHUB,
   };
 }

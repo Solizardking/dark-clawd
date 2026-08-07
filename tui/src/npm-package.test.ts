@@ -25,7 +25,7 @@ function loadPkg(): {
   return JSON.parse(readFileSync(pkgPath, 'utf8'));
 }
 
-describe('npm package surface (@openclawdsolana/dark-clawd)', () => {
+describe('npm package surface (@x402solana/dark-clawd)', () => {
   test('package.json name, bins, files, and pack hooks support npm install', () => {
     const pkg = loadPkg() as ReturnType<typeof loadPkg> & {
       homepage?: string;
@@ -33,7 +33,7 @@ describe('npm package surface (@openclawdsolana/dark-clawd)', () => {
       bugs?: { url?: string };
       publishConfig?: { access?: string };
     };
-    expect(pkg.name).toBe('@openclawdsolana/dark-clawd');
+    expect(pkg.name).toBe('@x402solana/dark-clawd');
     expect(pkg.main).toBe('dist/index.js');
     expect(pkg.bin['dark-clawd']).toBe('dist/cli.js');
     expect(pkg.bin.clawd).toBe('dist/cli.js');
@@ -53,13 +53,15 @@ describe('npm package surface (@openclawdsolana/dark-clawd)', () => {
     expect(existsSync(fixShebang)).toBe(true);
   });
 
-  test('install.sh documents npm global install + hub + github', () => {
+  test('install.sh documents npm global install + hub + github release tarball', () => {
     const sh = readFileSync(installSh, 'utf8');
-    expect(sh).toContain('@openclawdsolana/dark-clawd');
+    expect(sh).toContain('@x402solana/dark-clawd');
     expect(sh).toMatch(/npm install -g/);
     expect(sh).toContain('dark-clawd --help');
     expect(sh).toContain('https://cheshireterminal.ai/dark-clawd');
     expect(sh).toContain('https://github.com/Solizardking/dark-clawd');
+    expect(sh).toContain('releases/download/v');
+    expect(sh).toContain('x402solana-dark-clawd-');
   });
 
   test('fix-shebang.mjs rewrites bun shebang to node on a temp fixture', () => {

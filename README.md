@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/Solizardking/dark-clawd"><img src="https://img.shields.io/github/stars/Solizardking/dark-clawd?style=for-the-badge" alt="GitHub stars"></a>
   <a href="https://github.com/Solizardking/dark-clawd"><img src="https://img.shields.io/badge/GitHub-public-brightgreen?style=for-the-badge" alt="Public repo"></a>
-  <a href="https://www.npmjs.com/package/@openclawdsolana/dark-clawd"><img src="https://img.shields.io/npm/v/@openclawdsolana/dark-clawd?style=for-the-badge" alt="npm"></a>
+  <a href="https://www.npmjs.com/package/@x402solana/dark-clawd"><img src="https://img.shields.io/npm/v/@x402solana/dark-clawd?style=for-the-badge" alt="npm"></a>
   <a href="https://cheshireterminal.ai/dark-clawd"><img src="https://img.shields.io/badge/Hub-cheshireterminal.ai-8A2BE2?style=for-the-badge" alt="Product hub"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
@@ -134,16 +134,21 @@
 
 ### One-shot install (npm)
 
-Preferred package surface is **`tui/`** (`@openclawdsolana/dark-clawd`). Consumers only need **Node.js ≥18** — Bun is not required at install or runtime.
+Preferred package surface is **`tui/`** (`@x402solana/dark-clawd`). Consumers only need **Node.js ≥18** — Bun is not required at install or runtime.
 
 | Surface | URL |
 |---------|-----|
 | **Product hub** | [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd) |
 | **GitHub** | [github.com/Solizardking/dark-clawd](https://github.com/Solizardking/dark-clawd) |
-| **npm** | [`@openclawdsolana/dark-clawd`](https://www.npmjs.com/package/@openclawdsolana/dark-clawd) |
+| **npm** | [`@x402solana/dark-clawd`](https://www.npmjs.com/package/@x402solana/dark-clawd) |
 
 ```bash
-npm install -g @openclawdsolana/dark-clawd
+# One-shot from GitHub release asset (always works for v1.0.0)
+npm install -g https://github.com/Solizardking/dark-clawd/releases/download/v1.0.0/x402solana-dark-clawd-1.0.0.tgz
+
+# Or from the npm registry (when published):
+# npm install -g @x402solana/dark-clawd
+
 dark-clawd welcome     # first-run guide
 dark-clawd --help
 # aliases: clawd · clawd-tui
@@ -152,11 +157,13 @@ dark-clawd setup
 dark-clawd run
 ```
 
-Installer script (npm-first):
+Installer script (registry → GitHub tarball fallback):
 
 ```bash
 curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
-# or from a clone: bash tui/install.sh
+# or from a clone / release:
+bash tui/install.sh
+# or: curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
 ```
 
 ### Local Development
@@ -377,7 +384,7 @@ PHOENIX_RPC_URL=https://api.mainnet-beta.solana.com
 
 ```
 dark-ralph/                   # workspace path (product: Dark Clawd)
-├── package.json              # @openclawdsolana/dark-clawd (+ legacy ralph bins)
+├── package.json              # @x402solana/dark-clawd (+ legacy ralph bins)
 ├── bun.lock · tsconfig.json · .gitignore
 ├── README.md
 │

@@ -14,13 +14,13 @@ const LEGACY = ['r', 'a', 'l', 'p', 'h'].join('');
 describe('clawd rebrand (root package)', () => {
   test('package identity uses clawd naming (legacy bins optional)', () => {
     const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
-    expect(pkg.name).toBe('@openclawdsolana/dark-clawd');
+    expect(pkg.name).toBe('@x402solana/dark-clawd');
     expect(pkg.bin['dark-clawd']).toBe('./dist/cli.js');
     expect(pkg.bin.clawd).toBe('./dist/cli.js');
     expect(pkg.bin['clawd-tui']).toBe('./dist/cli.js');
     expect(pkg.description.toLowerCase()).toContain('clawd');
-    // Workspace path may still be dark-ralph
-    expect(pkg.repository?.directory).toBe(`dark-${LEGACY}`);
+    expect(pkg.repository?.url).toContain('Solizardking/dark-clawd');
+    expect(pkg.homepage).toBe('https://cheshireterminal.ai/dark-clawd');
   });
 
   test('engine file is clawd-agent and class is ClawdAgent', () => {
@@ -135,8 +135,8 @@ describe('clawd rebrand (root package)', () => {
     expect(x.toLowerCase()).toContain('ralph');
 
     // Real package surface names match docs
-    expect(tuiPkg.name).toBe('@openclawdsolana/dark-clawd');
-    expect(rootPkg.name).toBe('@openclawdsolana/dark-clawd');
+    expect(tuiPkg.name).toBe('@x402solana/dark-clawd');
+    expect(rootPkg.name).toBe('@x402solana/dark-clawd');
     expect(envExample).toContain('BIRDEYE_API_KEY=');
     expect(envExample).toContain('OPENCLAWD_SITE_URL=');
     expect(tuiReadme).toContain('tui/');

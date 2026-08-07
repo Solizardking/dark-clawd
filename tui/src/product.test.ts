@@ -15,7 +15,7 @@ import {
 describe('product identity (first release)', () => {
   test('canonical hub, github, and npm package names', () => {
     expect(PRODUCT_NAME).toBe('Dark Clawd');
-    expect(PACKAGE_NAME).toBe('@openclawdsolana/dark-clawd');
+    expect(PACKAGE_NAME).toBe('@x402solana/dark-clawd');
     expect(PACKAGE_VERSION).toMatch(/^\d+\.\d+\.\d+/);
     expect(PRODUCT_HUB_URL).toBe('https://cheshireterminal.ai/dark-clawd');
     expect(PRODUCT_GITHUB_URL).toBe('https://github.com/Solizardking/dark-clawd');
@@ -29,6 +29,7 @@ describe('product identity (first release)', () => {
     expect(banner).toContain(PRODUCT_HUB_URL);
     expect(banner).toContain(PRODUCT_GITHUB_URL);
     expect(banner).toContain('npm install -g');
+    expect(banner).toContain('releases/download');
     expect(banner).toContain('dark-clawd run');
     expect(banner).toContain('dark-clawd status');
 
@@ -36,6 +37,7 @@ describe('product identity (first release)', () => {
     expect(info.hub).toBe(PRODUCT_HUB_URL);
     expect(info.github).toBe(PRODUCT_GITHUB_URL);
     expect(info.package).toBe(PACKAGE_NAME);
+    expect(info.tarball).toContain('releases/download');
     expect(detectRuntime()).toMatch(/Node|Bun/);
   });
 });

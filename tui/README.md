@@ -73,11 +73,14 @@ See also monorepo docs: [`../docs/AUTOMATON_INTEGRATION.md`](../docs/AUTOMATON_I
 |---------|------|
 | Hub | [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd) |
 | GitHub | [github.com/Solizardking/dark-clawd](https://github.com/Solizardking/dark-clawd) |
-| npm | [`@openclawdsolana/dark-clawd`](https://www.npmjs.com/package/@openclawdsolana/dark-clawd) |
+| npm | [`@x402solana/dark-clawd`](https://www.npmjs.com/package/@x402solana/dark-clawd) |
 
 ```bash
-# Global install (Node.js ≥18; Bun not required at runtime)
-npm install -g @openclawdsolana/dark-clawd
+# Global install from GitHub release (Node.js ≥18; Bun not required)
+npm install -g https://github.com/Solizardking/dark-clawd/releases/download/v1.0.0/x402solana-dark-clawd-1.0.0.tgz
+
+# Registry (when available):
+# npm install -g @x402solana/dark-clawd
 
 # Bins: dark-clawd · clawd · clawd-tui
 dark-clawd welcome     # friendly first-run guide
@@ -87,10 +90,10 @@ dark-clawd setup
 dark-clawd run
 ```
 
-Or use the installer script (prefers npm, falls back to bun / npx):
+Or use the installer script (registry → GitHub tarball → bun / npx):
 
 ```bash
-curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
 # local copy: bash install.sh
 dark-clawd welcome
 ```
@@ -281,7 +284,7 @@ Package root is `tui/` inside the workspace (product **Dark Clawd**; workspace f
 
 ```text
 tui/
-├── package.json              # @openclawdsolana/dark-clawd
+├── package.json              # @x402solana/dark-clawd
 ├── bun.lock
 ├── tsconfig.json
 ├── .env.example              # committed template (never commit .env)

@@ -21,7 +21,7 @@ describe('public GitHub + Cheshire product metadata', () => {
     expect(pkg.repository?.url).toContain('Solizardking/dark-clawd');
     expect(pkg.homepage).toBe(HUB);
     expect(pkg.bugs?.url).toContain('Solizardking/dark-clawd/issues');
-    expect(pkg.name).toBe('@openclawdsolana/dark-clawd');
+    expect(pkg.name).toBe('@x402solana/dark-clawd');
   });
 
   test('README documents public clone URL, hub, and Dark Clawd brand', () => {
@@ -30,7 +30,7 @@ describe('public GitHub + Cheshire product metadata', () => {
     expect(readme).toContain(HUB);
     expect(readme).toMatch(/git clone https:\/\/github\.com\/Solizardking\/dark-clawd\.git/);
     expect(readme).toMatch(/DARK CLAWD|Dark Clawd/);
-    expect(readme).toContain('npm install -g @openclawdsolana/dark-clawd');
+    expect(readme).toMatch(/@x402solana\/dark-clawd|x402solana-dark-clawd-1\.0\.0\.tgz/);
     expect(readme.toLowerCase()).toContain('forged from ralph on solana');
   });
 

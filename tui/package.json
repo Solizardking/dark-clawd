@@ -1,5 +1,5 @@
 {
-  "name": "@openclawdsolana/dark-clawd",
+  "name": "@x402solana/dark-clawd",
   "version": "1.0.0",
   "description": "Dark Clawd — autonomous Solana terminal intelligence (Bloomberg-style TUI + automation). Hub: cheshireterminal.ai/dark-clawd",
   "type": "module",

@@ -25,7 +25,7 @@ Shipped modules under Dark Clawd `src/`:
 | `src/components/BloombergDashboard.tsx` | View **[7] AUTOMATON** |
 | `src/engine/clawd-agent.ts` | `/automaton` commands |
 | `src/cli.tsx` | `dark-clawd automaton …` + status line |
-| **`tui/` package** | Published `@openclawdsolana/dark-clawd` — same bridge under `tui/src/*`, resolves sibling `../automaton`, view **[6]** |
+| **`tui/` package** | Published `@x402solana/dark-clawd` — same bridge under `tui/src/*`, resolves sibling `../automaton`, view **[6]** |
 
 - Resolves `automaton/` relative to the Dark Clawd package root
 - Loads real `package.json`, `constitution.md`, scripts, CLI package

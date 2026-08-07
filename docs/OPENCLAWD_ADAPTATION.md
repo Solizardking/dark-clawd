@@ -5,7 +5,7 @@ This workspace ships **two parallel Bun + Ink TUI surfaces** that share the same
 
 | Surface | Path | Package / bins | Role |
 | --- | --- | --- | --- |
-| Preferred publishable package | `tui/` | `@openclawdsolana/dark-clawd` → `dark-clawd` · `clawd` · `clawd-tui` | Full product TUI + automation kit + Fly sandbox |
+| Preferred publishable package | `tui/` | `@x402solana/dark-clawd` → `dark-clawd` · `clawd` · `clawd-tui` | Full product TUI + automation kit + Fly sandbox |
 | Root workspace TUI | `src/` (+ root `package.json`) | same package name; bins include legacy `dark-ralph` · `ralph` · `ralph-tui` aliases | Dev monorepo entry; keep aligned with `tui/` before publish |
 
 Shared OpenClawd routing defaults live in:
@@ -87,7 +87,7 @@ src/
 
 ```text
 tui/
-├── package.json            # @openclawdsolana/dark-clawd
+├── package.json            # @x402solana/dark-clawd
 ├── bun.lock
 ├── tsconfig.json           # same path-alias shape as root
 ├── .env.example            # committed template

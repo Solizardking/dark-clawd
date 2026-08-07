@@ -14,7 +14,7 @@ const LEGACY = ['r', 'a', 'l', 'p', 'h'].join('');
 describe('clawd rebrand', () => {
   test('package identity uses clawd naming', () => {
     const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
-    expect(pkg.name).toBe('@openclawdsolana/dark-clawd');
+    expect(pkg.name).toBe('@x402solana/dark-clawd');
     expect(pkg.bin['dark-clawd']).toBe('dist/cli.js');
     expect(pkg.bin.clawd).toBe('dist/cli.js');
     expect(pkg.bin['clawd-tui']).toBe('dist/cli.js');

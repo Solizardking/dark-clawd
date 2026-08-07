@@ -4,22 +4,24 @@
 
 **Product hub:** [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd)  
 **Source:** [github.com/Solizardking/dark-clawd](https://github.com/Solizardking/dark-clawd)  
-**npm:** `@openclawdsolana/dark-clawd`
+**npm package name:** `@x402solana/dark-clawd`  
+**Release asset:** [x402solana-dark-clawd-1.0.0.tgz](https://github.com/Solizardking/dark-clawd/releases/download/v1.0.0/x402solana-dark-clawd-1.0.0.tgz)
 
 ### Install (Node.js ≥18 — Bun not required)
 
 ```bash
-npm install -g @openclawdsolana/dark-clawd
+# Recommended for v1.0.0 (GitHub release tarball)
+npm install -g https://github.com/Solizardking/dark-clawd/releases/download/v1.0.0/x402solana-dark-clawd-1.0.0.tgz
 dark-clawd welcome
 dark-clawd --help
 dark-clawd status
 dark-clawd run
 ```
 
-Or:
+Or installer (registry → tarball fallback):
 
 ```bash
-curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
 ```
 
 ### Highlights

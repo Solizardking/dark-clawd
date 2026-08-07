@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
 # Dark Clawd one-shot installer (first release)
 # curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
-# Source: https://github.com/Solizardking/dark-clawd  ·  Hub: https://cheshireterminal.ai/dark-clawd
+# Source: https://github.com/Solizardking/dark-clawd
+# Hub:    https://cheshireterminal.ai/dark-clawd
 set -euo pipefail
 
 PRODUCT_URL="${CLAWD_PRODUCT_URL:-https://cheshireterminal.ai/dark-clawd}"
 GITHUB_URL="${CLAWD_GITHUB_URL:-https://github.com/Solizardking/dark-clawd}"
-PKG="${CLAWD_NPM_PACKAGE:-@openclawdsolana/dark-clawd}"
+PKG="${CLAWD_NPM_PACKAGE:-@x402solana/dark-clawd}"
+VERSION="${CLAWD_VERSION:-1.0.0}"
+# Prebuilt npm tarball attached to the GitHub release (works without npm OTP publish)
+TGZ_URL="${CLAWD_TGZ_URL:-https://github.com/Solizardking/dark-clawd/releases/download/v${VERSION}/x402solana-dark-clawd-${VERSION}.tgz}"
 BIN_DIR="${CLAWD_BIN_DIR:-$HOME/.local/bin}"
-INSTALL_MODE="${CLAWD_INSTALL_MODE:-npm}" # npm | bun | npx-only
+INSTALL_MODE="${CLAWD_INSTALL_MODE:-auto}" # auto | npm | tgz | bun | npx-only
+USER_PREFIX="${CLAWD_PREFIX:-$HOME/.darkclawd}"
 
 echo ""
 echo "🦞 Dark Clawd — recursive Solana + Robinhood automation TUI"
-echo "   Hub:    $PRODUCT_URL"
-echo "   GitHub: $GITHUB_URL"
-echo "   npm:    $PKG"
+echo "   Hub:     $PRODUCT_URL"
+echo "   GitHub:  $GITHUB_URL"
+echo "   npm:     $PKG"
+echo "   release: v$VERSION"
 echo ""
 
 need_cmd() {
@@ -28,58 +34,89 @@ have_node18() {
 
 mkdir -p "$BIN_DIR"
 
-install_with_npm() {
-  if need_cmd npm; then
-    if ! have_node18; then
-      echo "⚠ Node.js ≥18 recommended (found: $(node -v 2>/dev/null || echo none))"
+link_bins_from_prefix() {
+  local prefix="$1"
+  local bin_src="$prefix/bin"
+  [[ -d "$bin_src" ]] || return 0
+  for b in dark-clawd clawd clawd-tui; do
+    if [[ -e "$bin_src/$b" ]]; then
+      ln -sfn "$bin_src/$b" "$BIN_DIR/$b" 2>/dev/null || true
     fi
-    echo "→ npm install -g $PKG"
-    if npm install -g "$PKG"; then
-      return 0
-    fi
-    echo "⚠ global npm install failed; trying user prefix ~/.darkclawd ..."
-    npm install -g --prefix "$HOME/.darkclawd" "$PKG"
-    export PATH="$HOME/.darkclawd/bin:$PATH"
-    # Persist path hint
-    if [[ -d "$HOME/.darkclawd/bin" ]]; then
-      ln -sfn "$HOME/.darkclawd/bin/dark-clawd" "$BIN_DIR/dark-clawd" 2>/dev/null || true
-      ln -sfn "$HOME/.darkclawd/bin/clawd" "$BIN_DIR/clawd" 2>/dev/null || true
-    fi
+  done
+  export PATH="$bin_src:$BIN_DIR:$PATH"
+}
+
+install_with_npm_registry() {
+  need_cmd npm || return 1
+  if ! have_node18; then
+    echo "⚠ Node.js ≥18 recommended (found: $(node -v 2>/dev/null || echo none))"
+  fi
+  echo "→ npm install -g $PKG"
+  if npm install -g "$PKG" 2>/dev/null; then
+    return 0
+  fi
+  echo "⚠ global registry install failed; trying user prefix $USER_PREFIX ..."
+  if npm install -g --prefix "$USER_PREFIX" "$PKG" 2>/dev/null; then
+    link_bins_from_prefix "$USER_PREFIX"
+    return 0
+  fi
+  return 1
+}
+
+install_with_tarball() {
+  need_cmd npm || return 1
+  echo "→ npm install -g from GitHub release tarball"
+  echo "   $TGZ_URL"
+  if npm install -g "$TGZ_URL"; then
+    return 0
+  fi
+  echo "⚠ global tarball install failed; trying user prefix $USER_PREFIX ..."
+  if npm install -g --prefix "$USER_PREFIX" "$TGZ_URL"; then
+    link_bins_from_prefix "$USER_PREFIX"
     return 0
   fi
   return 1
 }
 
 install_with_bun() {
-  if need_cmd bun; then
-    echo "→ bun add -g $PKG"
-    bun add -g "$PKG" || true
-    return 0
-  fi
-  return 1
+  need_cmd bun || return 1
+  echo "→ bun add -g $PKG"
+  bun add -g "$PKG" 2>/dev/null || return 1
+  return 0
 }
 
 case "$INSTALL_MODE" in
+  npm)
+    install_with_npm_registry || install_with_tarball || true
+    ;;
+  tgz)
+    install_with_tarball || true
+    ;;
   bun)
-    install_with_bun || install_with_npm || true
+    install_with_bun || install_with_tarball || true
     ;;
   npx-only)
     echo "→ npx-only mode (no global install)"
     ;;
   *)
-    install_with_npm || install_with_bun || true
+    # Prefer registry; fall back to GitHub release asset (always works for v1.0.0)
+    install_with_npm_registry || install_with_tarball || install_with_bun || true
     ;;
 esac
 
 # Ensure wrapper for npx fallback when global bin is missing
-WRAPPER="$BIN_DIR/dark-clawd"
 if ! need_cmd dark-clawd; then
+  WRAPPER="$BIN_DIR/dark-clawd"
   cat > "$WRAPPER" <<EOF
 #!/usr/bin/env bash
-exec npx --yes ${PKG} "\$@"
+# Dark Clawd npx fallback — prefers release tarball when registry package is missing
+if npm view ${PKG} version >/dev/null 2>&1; then
+  exec npx --yes ${PKG} "\$@"
+fi
+exec npx --yes ${TGZ_URL} "\$@"
 EOF
   chmod +x "$WRAPPER"
-  echo "→ installed npx wrapper: $WRAPPER"
+  echo "→ installed launcher: $WRAPPER"
 fi
 
 # Config dir
@@ -103,23 +140,26 @@ if need_cmd dark-clawd; then
   echo "✓ Dark Clawd ready"
   dark-clawd welcome 2>/dev/null || true
 else
-  echo "✓ Install finished (use npx if PATH is not set yet)"
+  echo "✓ Install finished — add PATH or use npx (see below)"
 fi
 echo ""
-echo "  Help:     dark-clawd --help   (or: npx $PKG --help)"
+echo "  Help:     dark-clawd --help"
 echo "  Welcome:  dark-clawd welcome"
 echo "  Status:   dark-clawd status"
 echo "  Setup:    dark-clawd setup"
 echo "  TUI:      dark-clawd run"
-echo "  Sandbox:  dark-clawd sandbox"
 echo ""
 echo "  Hub:      $PRODUCT_URL"
 echo "  GitHub:   $GITHUB_URL"
+echo "  Release:  $GITHUB_URL/releases/tag/v$VERSION"
 echo "  Issues:   $GITHUB_URL/issues"
 echo ""
-echo "Add to PATH if needed:"
+echo "Manual install (GitHub release tarball):"
+echo "  npm install -g $TGZ_URL"
+echo ""
+echo "PATH tips:"
 echo "  export PATH=\"$BIN_DIR:\$PATH\""
-if [[ -d "$HOME/.darkclawd/bin" ]]; then
-  echo "  export PATH=\"$HOME/.darkclawd/bin:\$PATH\""
+if [[ -d "$USER_PREFIX/bin" ]]; then
+  echo "  export PATH=\"$USER_PREFIX/bin:\$PATH\""
 fi
 echo ""

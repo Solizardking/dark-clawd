@@ -2,7 +2,7 @@
 
 All notable product releases for **Dark Clawd**.
 
-Preferred npm package lives in `tui/` → `@openclawdsolana/dark-clawd`.
+Preferred npm package lives in `tui/` → `@x402solana/dark-clawd`.
 
 See [tui/CHANGELOG.md](tui/CHANGELOG.md) for package details.
 
@@ -10,4 +10,4 @@ See [tui/CHANGELOG.md](tui/CHANGELOG.md) for package details.
 
 - Public repo: https://github.com/Solizardking/dark-clawd
 - Product hub: https://cheshireterminal.ai/dark-clawd
-- npm one-shot: `npm install -g @openclawdsolana/dark-clawd`
+- npm one-shot: `npm install -g @x402solana/dark-clawd`
