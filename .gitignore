@@ -46,3 +46,4 @@ venv/
 # Agent journals / local state
 agent/journal/*.jsonl
 **/.automaton/
+.env.local
