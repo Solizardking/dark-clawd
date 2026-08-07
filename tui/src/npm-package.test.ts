@@ -107,4 +107,61 @@ describe('npm package surface (@x402solana/dark-clawd)', () => {
     expect(out).toMatch(/Dark Clawd/i);
     expect(out).not.toMatch(/bun: command not found/i);
   });
+
+  test('npm pack tarball includes Node-shebang dist/cli.js and install-g --help works', () => {
+    // Real pack path (prepack builds). Prefer existing tarball to keep CI fast when present.
+    const tarballName = 'x402solana-dark-clawd-1.0.0.tgz';
+    let tarball = join(root, tarballName);
+    if (!existsSync(tarball)) {
+      const pack = spawnSync('npm', ['pack'], {
+        cwd: root,
+        encoding: 'utf8',
+        env: process.env,
+      });
+      expect(pack.status).toBe(0);
+      expect(pack.stdout + pack.stderr).toMatch(/x402solana-dark-clawd-1\.0\.0\.tgz/);
+      tarball = join(root, tarballName);
+    }
+    expect(existsSync(tarball)).toBe(true);
+
+    // Inspect packed cli shebang without full extract tree
+    const list = spawnSync('tar', ['-tzf', tarball], { encoding: 'utf8' });
+    expect(list.status).toBe(0);
+    expect(list.stdout).toMatch(/package\/dist\/cli\.js/);
+    expect(list.stdout).toMatch(/package\/package\.json/);
+
+    // Only read the first line of the packed CLI (5MB+ file; avoid loading whole tarball member)
+    const shebang = spawnSync(
+      'sh',
+      ['-c', `tar -xOf ${JSON.stringify(tarball)} package/dist/cli.js | head -n 1`],
+      { encoding: 'utf8' },
+    );
+    expect(shebang.status).toBe(0);
+    expect((shebang.stdout || '').trim()).toBe('#!/usr/bin/env node');
+
+    // Global-style install into isolated prefix (same consumer path as npm install -g)
+    const prefix = join(root, 'dist', '.pack-install-prefix');
+    spawnSync('rm', ['-rf', prefix], { encoding: 'utf8' });
+    mkdirSync(prefix, { recursive: true });
+    const install = spawnSync('npm', ['install', '-g', '--prefix', prefix, tarball], {
+      cwd: root,
+      encoding: 'utf8',
+      env: process.env,
+    });
+    expect(install.status).toBe(0);
+
+    const bin = join(prefix, 'bin', 'dark-clawd');
+    expect(existsSync(bin)).toBe(true);
+    const help = spawnSync(bin, ['--help'], {
+      encoding: 'utf8',
+      env: { ...process.env, PATH: `${join(prefix, 'bin')}:${process.env.PATH || ''}` },
+    });
+    expect(help.status).toBe(0);
+    const out = `${help.stdout}\n${help.stderr}`;
+    expect(out).toMatch(/Dark Clawd/i);
+    expect(out).toMatch(/dark-clawd/i);
+
+    // Cleanup install prefix only (keep tarball for local re-use / gitignored)
+    spawnSync('rm', ['-rf', prefix], { encoding: 'utf8' });
+  }, 180_000);
 });
