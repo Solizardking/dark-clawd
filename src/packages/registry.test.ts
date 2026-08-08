@@ -8,6 +8,7 @@ import { join } from 'node:path';
 import {
   bootstrapPackageRegistry,
   getAutomatonInterop,
+  getLlmWikiTangInterop,
   getPackageStatus,
   getSessionKeyInterop,
   getUtilsInterop,
@@ -19,6 +20,12 @@ import {
   roundTripChannelSessionKey,
   softLoadPackageEntry,
 } from './registry.js';
+import {
+  loadLlmWikiTangPyProject,
+  parsePyProjectToml,
+  resolveLlmWikiTangRoot,
+} from '../services/llm-wiki-tang-bridge.js';
+import { readFileSync } from 'node:fs';
 
 const ROOT = resolveDarkClawdRoot();
 
@@ -37,6 +44,7 @@ describe('package registry (channel + support interop)', () => {
       'skills',
       'wizard',
       'automaton',
+      'llm-wiki-tang',
     ]) {
       expect(existsSync(join(ROOT, dir))).toBe(true);
     }
@@ -59,7 +67,9 @@ describe('package registry (channel + support interop)', () => {
 
     const metaIds = boot.meta.filter((m) => m.present).map((m) => m.id);
     expect(metaIds).toContain('automaton');
+    expect(metaIds).toContain('llm-wiki-tang');
     expect(listPresentMetaIds(ROOT)).toContain('automaton');
+    expect(listPresentMetaIds(ROOT)).toContain('llm-wiki-tang');
 
     expect(listPresentChannelIds(ROOT).length).toBeGreaterThanOrEqual(4);
     expect(listPresentSupportIds(ROOT).length).toBeGreaterThanOrEqual(4);
@@ -80,6 +90,44 @@ describe('package registry (channel + support interop)', () => {
     expect(boot.automaton.present).toBe(true);
     expect(boot.automaton.constitutionPresent).toBe(true);
     expect(String(boot.automaton.packageName || '')).toMatch(/automaton/i);
+  });
+
+  test('llm-wiki-tang is discoverable via registry + pyproject metadata', () => {
+    expect(getPackageStatus('llm-wiki-tang', ROOT).present).toBe(true);
+
+    const wikiRoot = resolveLlmWikiTangRoot(ROOT);
+    expect(existsSync(join(wikiRoot, 'pyproject.toml'))).toBe(true);
+    expect(existsSync(join(wikiRoot, 'api', 'main.py'))).toBe(true);
+
+    // Drive real pyproject.toml — not a hardcoded name string without reading the file
+    const raw = readFileSync(join(wikiRoot, 'pyproject.toml'), 'utf8');
+    const parsed = parsePyProjectToml(raw);
+    expect(parsed.name).toBe('llm-wiki-tang');
+    expect(parsed.version).toBeTruthy();
+    expect(String(parsed.description || '').length).toBeGreaterThan(0);
+
+    const fromDisk = loadLlmWikiTangPyProject(wikiRoot);
+    expect(fromDisk.name).toBe(parsed.name);
+    expect(fromDisk.version).toBe(parsed.version);
+
+    const interop = getLlmWikiTangInterop(ROOT);
+    expect(interop.present).toBe(true);
+    expect(interop.packageName).toBe(parsed.name);
+    expect(interop.version).toBe(parsed.version);
+    expect(interop.paths.apiMain).toBe(true);
+    expect(interop.paths.api).toBe(true);
+    expect(interop.paths.src).toBe(true);
+    expect(interop.paths.tests).toBe(true);
+    expect(interop.paths.readme).toBe(true);
+    expect(interop.researchApiUrl.length).toBeGreaterThan(0);
+    expect(interop.uvicornCmd).toContain('uvicorn');
+    expect(interop.formatStatusReport()).toContain('LLM-WIKI-TANG');
+
+    const boot = bootstrapPackageRegistry(ROOT);
+    expect(boot.llmWikiTang.present).toBe(true);
+    expect(boot.llmWikiTang.packageName).toBe(parsed.name);
+    expect(boot.llmWikiTang.apiMainPresent).toBe(true);
+    expect(boot.llmWikiTang.researchApiUrl).toBeTruthy();
   });
 
   test('routing↔sessions session-key round-trip for agent:main:telegram:dm:user1', () => {
@@ -143,9 +191,18 @@ describe('package registry (channel + support interop)', () => {
     // Presence + bridge path still works
     expect(getPackageStatus('automaton', ROOT).present).toBe(true);
 
+    // Python API entry cannot load as a JS module — soft-fail must not throw
+    const wiki = await softLoadPackageEntry('llm-wiki-tang', 'api/main.py', ROOT);
+    expect(typeof wiki.ok).toBe('boolean');
+    if (!wiki.ok) {
+      expect(String(wiki.error || '').length).toBeGreaterThan(0);
+    }
+    expect(getPackageStatus('llm-wiki-tang', ROOT).present).toBe(true);
+    expect(getLlmWikiTangInterop(ROOT).present).toBe(true);
+
     // Bootstrap / list must still work after soft-fail attempt
     expect(getPackageStatus('telegram', ROOT).present).toBe(true);
-    expect(listPackageStatuses(ROOT).length).toBeGreaterThanOrEqual(11);
+    expect(listPackageStatuses(ROOT).length).toBeGreaterThanOrEqual(12);
   });
 
   test('core registry import path does not throw when bootstrapping', () => {
@@ -154,5 +211,6 @@ describe('package registry (channel + support interop)', () => {
     // sessionKeys + utils attached for consumers
     expect(typeof boot.sessionKeys.buildAgentPeerSessionKey).toBe('function');
     expect(typeof boot.utils.parseBooleanValue).toBe('function');
+    expect(boot.llmWikiTang.present).toBe(true);
   });
 });

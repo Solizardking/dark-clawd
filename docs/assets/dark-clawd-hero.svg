@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="920" height="280" viewBox="0 0 920 280" role="img" aria-label="Dark Clawd — forged from Ralph on Solana">
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="280" viewBox="0 0 920 280" role="img" aria-label="Dark Clawd TUI — tui/ package · forged from Ralph on Solana">
   <title>Dark Clawd</title>
-  <desc>Animated Dark Clawd terminal banner. Forged from Ralph on Solana.</desc>
+  <desc>Animated Dark Clawd terminal banner. Canonical product TUI in tui/ · forged from Ralph on Solana.</desc>
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#05080f"/>

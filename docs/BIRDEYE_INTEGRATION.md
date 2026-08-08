@@ -4,14 +4,18 @@
 
 Real-time Solana token data from Birdeye’s API and WebSocket services for the **Dark Clawd** TUI (forged from Ralph on Solana).
 
-The same service modules ship in both trees (keep them aligned when changing the client):
+After the **TUI upgrade**, prefer the published product tree **`tui/`** for shipping and docs. Root **`src/`** remains a monorepo dev mirror — keep service modules aligned when changing the client.
+
+The same service modules ship in both trees:
 
 | Tree | Paths |
 | --- | --- |
-| Root | `src/services/birdeye-api.ts`, `birdeye-websocket.ts`, `market-data-provider.ts`, `birdeye.ts`, `index.ts` |
-| Package | `tui/src/services/` (same filenames) |
+| **Package (canonical)** | `tui/src/services/birdeye-api.ts`, `birdeye-websocket.ts`, `market-data-provider.ts`, `birdeye.ts`, `index.ts` |
+| Root (dev) | `src/services/` (same filenames) |
 
-Components that accept optional `apiKey` / live refresh live under `src/components/` and `tui/src/components/`.
+Components that accept optional `apiKey` / live refresh live under `tui/src/components/` and `src/components/`.
+
+See [MONOREPO.md](./MONOREPO.md) for the full workspace map.
 
 ## Services
 
@@ -49,7 +53,7 @@ Compatibility wrapper still exported as `BirdeyeService` for older call sites.
 
 ### `services/index.ts`
 
-Barrel re-exports Birdeye API/WS/hooks, Helius, Phoenix perps, AI providers, and news search.
+Barrel re-exports Birdeye API/WS/hooks, Helius, Phoenix perps, AI providers, and news search (package also re-exports trade automation / sandbox where present).
 
 ## Components (live data props)
 
@@ -62,7 +66,7 @@ All of these support optional `apiKey` and auto-refresh style live data where wi
 | `Heatmap.tsx` | Real market data heatmap |
 | `ActivityFeed.tsx` | `TopMovers` gainers/losers |
 
-Present in both `src/components/` and `tui/src/components/`.
+Present in both `tui/src/components/` and `src/components/`.
 
 ## Usage
 
@@ -161,7 +165,7 @@ HELIUS_API_KEY=
 HELIUS_RPC_URL=https://mainnet.helius-rpc.com/?api-key=
 ```
 
-Config loaders (`src/config/schema.ts`, `tui/src/config/schema.ts`) map `process.env.BIRDEYE_API_KEY` into `apiKeys.BIRDEYE_API_KEY`.
+Config loaders (`tui/src/config/schema.ts`, `src/config/schema.ts`) map `process.env.BIRDEYE_API_KEY` into `apiKeys.BIRDEYE_API_KEY`.
 
 **Security:** root `.gitignore` ignores `.env` / `.env.*` and keeps `!.env.example`. Never commit `tui/.env`.
 
@@ -212,12 +216,20 @@ POPULAR_TOKENS = {
 
 ## Related package commands
 
-From `tui/` (preferred product surface):
+From **`tui/`** (preferred product surface after TUI upgrade):
 
 ```bash
 bun run run          # TUI (Birdeye panels use key when present)
 bun run status       # shows Birdeye among provider status
 bun run build        # emits tui/dist/cli.js (+ yoga.wasm)
+bun test src         # includes product / catalog / package communication tests
 ```
 
-See also: [OpenClawd adaptation](./OPENCLAWD_ADAPTATION.md), [`tui/README.md`](../tui/README.md).
+Installed binary:
+
+```bash
+dark-clawd run
+dark-clawd status
+```
+
+See also: [MONOREPO.md](./MONOREPO.md), [OpenClawd adaptation](./OPENCLAWD_ADAPTATION.md), [`tui/README.md`](../tui/README.md).

@@ -679,13 +679,42 @@ Market Cap: ${this.birdeye.formatVolume(info.mc || 0)}`,
   }
 
   private async cmdResearch(topic: string): Promise<void> {
-    if (!this.ai) {
-      this.emitMessage('clawd', '[ERROR] AI services not configured.', 'error');
+    if (!topic) {
+      this.emitMessage('system', '[USAGE] /research <topic>', 'normal');
       return;
     }
 
-    if (!topic) {
-      this.emitMessage('system', '[USAGE] /research <topic>', 'normal');
+    // Prefer local llm-wiki-tang AutoResearch when RESEARCH_API_URL responds.
+    try {
+      const { researchViaLlmWikiTang, getResearchApiUrl } = await import(
+        '../services/llm-wiki-tang-bridge.js'
+      );
+      this.emitMessage(
+        'system',
+        `[LLM-WIKI-TANG] Researching via ${getResearchApiUrl()}…`,
+        'normal',
+      );
+      const local = await researchViaLlmWikiTang(topic);
+      this.state.apiCalls++;
+      if (local.ok && local.content) {
+        this.emitMessage('clawd', `[RESEARCH · local]\n${local.content}`, 'data');
+        return;
+      }
+      this.emitMessage(
+        'system',
+        `[LLM-WIKI-TANG] unavailable (${local.error ?? 'no content'}) — falling back`,
+        'normal',
+      );
+    } catch {
+      // soft-fail into Perplexity path
+    }
+
+    if (!this.ai) {
+      this.emitMessage(
+        'clawd',
+        '[ERROR] Research API down and AI services not configured. Start llm-wiki-tang (clawd research-api status) or set PERPLEXITY_API_KEY.',
+        'error',
+      );
       return;
     }
 

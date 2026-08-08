@@ -1,12 +1,30 @@
 # OpenClawd Adaptation Map
 
 **Dark Clawd** is the OpenClawd terminal intelligence layer (forged from Ralph on Solana).
-This workspace ships **two parallel Bun + Ink TUI surfaces** that share the same product name and OpenClawd defaults:
+
+After the **TUI upgrade**, the monorepo has a single preferred product package at **`tui/`**, a root dev surface at **`src/`**, messaging channels, routing/session utilities, and supporting runtimes (Automaton, agent, MPP, PumpFun).
+
+Hub: [https://cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd)
+
+For the full inventory of integrated trees, see **[MONOREPO.md](./MONOREPO.md)**.
+
+---
+
+## TUI upgrade summary
+
+| Before / parallel | After (canonical) |
+| --- | --- |
+| Dual product surfaces easy to drift | **`tui/` is the publishable product** (`@x402solana/dark-clawd`) |
+| Missing monorepo `runTui` entry | **`tui/tui.ts`** exports `runTui()` for `scripts/run-tui.ts` + wizard |
+| Install path ambiguity | Product identity in **`tui/src/product.ts`** → GitHub raw `tui/install.sh` |
+| Tool catalog docs only | **171 tools** live under `tui/src/tools/` + CLI `dark-clawd tools` / `agent` |
+| Communication untested | **`tui/src/package-communication.test.ts`** + product/npm/automaton tests |
 
 | Surface | Path | Package / bins | Role |
 | --- | --- | --- | --- |
-| Preferred publishable package | `tui/` | `@x402solana/dark-clawd` → `dark-clawd` · `clawd` · `clawd-tui` | Full product TUI + automation kit + Fly sandbox |
-| Root workspace TUI | `src/` (+ root `package.json`) | same package name; bins include legacy `dark-ralph` · `ralph` · `ralph-tui` aliases | Dev monorepo entry; keep aligned with `tui/` before publish |
+| **Preferred publishable package** | `tui/` | `@x402solana/dark-clawd` → `dark-clawd` · `clawd` · `clawd-tui` | Full product TUI + tools + automation kit + Fly sandbox |
+| Root workspace TUI | `src/` (+ root `package.json`) | same product name; bins include legacy `dark-ralph` · `ralph` · `ralph-tui` | Dev monorepo entry; keep aligned with `tui/` before publish |
+| Monorepo TUI bridge | `tui/tui.ts` | `runTui(opts?)` | Openclaw-compatible launcher → Ink `App` |
 
 Shared OpenClawd routing defaults live in:
 
@@ -15,34 +33,36 @@ Shared OpenClawd routing defaults live in:
 
 Both are re-exported from `src/index.ts` / `tui/src/index.ts`.
 
-Hub: [https://cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd)
-
 ---
 
 ## Workspace path map
 
-Workspace directory on disk may still be named `dark-ralph/`; the product is **Dark Clawd**.
-
 | Path | OpenClawd / product role |
 | --- | --- |
-| `src/` | Root TUI sources: CLI (`cli.tsx`), app shell (`App.tsx`), Bloomberg components, `engine/clawd-agent.ts`, providers, skills. |
-| `tui/` | Preferred package root: same TUI family plus trade automation, sandbox HTTP API, `install.sh`, `Dockerfile`, `fly.toml`. |
-| `tui/src/` | Package TypeScript entry tree (see layout below). |
-| `tui/dist/` | Build output (`cli.js`, `index.js`, `yoga.wasm`) — rebuild with `bun run build` / `build:lib`; do not hand-edit. |
-| `tui/.env.example` | Documented provider + OpenClawd env template (committed). |
-| `tui/.env` | Local secrets only — gitignored via root `.gitignore` (`*.env` patterns; `!.env.example` kept). |
-| `agent/` | Paper/devnet OODA loop (Ralph harness lineage: `loop.py`, `RALPH.md`, journal). |
-| `automaton/` | Sovereign loop runtime / background agent pattern. |
-| `docs/` | Public notes: Birdeye, OpenClawd adaptation, X narrative; hero at `docs/assets/dark-clawd-hero.svg`. |
-| `llm-wiki-tang/` | Research / memory API for vault-backed notes. |
-| `mpp/` | Solana Machine Payments Protocol (HTTP 402) kit (`solana-mpp` / `dark-clawd` helpers). |
-| Root `package.json` · `bun.lock` · `tsconfig.json` | Workspace install, lockfile, strict Bun/TS config for root `src/`. |
-| Root `README.md` | Product surface + command matrix (must stay Dark Clawd branded). |
-| Root `.gitignore` | Secrets, `node_modules/`, `dist/`, wallets, local state (`.clawdbot/`, sessions). |
+| **`tui/`** | **Canonical package root** — CLI, Bloomberg TUI, 171 tools, automation, sandbox, install, Docker/Fly |
+| `tui/src/` | Package TypeScript tree (`cli.tsx`, `App.tsx`, `tools/`, `agent/`, services, skills) |
+| `tui/tui.ts` | **`runTui`** monorepo entry (scripts + wizard) |
+| `tui/dist/` | Build output — rebuild with `cd tui && bun run build` / `build:lib` |
+| `tui/.env.example` | Committed provider + OpenClawd env template |
+| **`src/`** | Root TUI sources (dev); mirror product behavior into `tui/` when shipping |
+| `agent/` | Paper/devnet OODA loop (Ralph harness: `loop.py`, `RALPH.md`, journal) |
+| `automaton/` | Sovereign loop runtime / constitution / creator CLI |
+| `telegram/` · `signal/` · `slack/` · `web/` | Messaging channels (web = WhatsApp Baileys lineage) |
+| `whatsapp/` | Shared WhatsApp normalize helpers |
+| `wizard/` | Gateway onboarding (imports `../tui/tui.js`) |
+| `routing/` · `sessions/` · `providers/` · `utils/` | Route keys, session policy, model providers, shared helpers |
+| `scripts/` | Package checks, `run-tui.ts`, setup, smoke |
+| `mpp/` | Solana Machine Payments Protocol (HTTP 402 / x402) |
+| `clawdbot-pumpfun/` | Rust PumpFun copy-trading crate |
+| `llm-wiki-tang/` | Research / memory API |
+| `skills/` | Local agent skills (e.g. zkrouter) |
+| `docs/` | Public notes + monorepo map; hero at `docs/assets/dark-clawd-hero.svg` |
+| Root `package.json` · `bun.lock` · `tsconfig.json` | Workspace install + root `src/` scripts |
+| Root `README.md` | Product surface + install matrix |
 
 ### Generated / dependency folders (do not hand-edit)
 
-`dist/`, `tui/dist/`, `node_modules/`, `mpp/dist/`, `target/`, lockfile-driven installs — rebuild from source when publishing.
+`dist/`, `tui/dist/`, `node_modules/`, `mpp/dist/`, `clawdbot-pumpfun/target/`, lockfile-driven installs — rebuild from source when publishing.
 
 ---
 
@@ -55,83 +75,82 @@ src/
 ├── index.ts                # Library exports
 ├── openclawd.ts            # OPENCLAWD_* URLs + routes
 ├── config/
-│   ├── schema.ts           # Zod config (apiKeys, openclawd, phoenix, solana, clawd)
+│   ├── schema.ts           # Zod config (apiKeys, openclawd, phoenix, solana, clawd, automaton)
 │   └── themes.ts           # dark-clawd theme + palettes
 ├── engine/
 │   └── clawd-agent.ts      # ClawdAgent OODA-style recursive agent
-├── components/             # Bloomberg panels (PriceChart, Heatmap, OrderBook, …)
-│                           # Root also includes Perps* panels
-├── services/
-│   ├── birdeye-api.ts
-│   ├── birdeye-websocket.ts
-│   ├── birdeye.ts          # legacy helper
-│   ├── market-data-provider.ts
-│   ├── helius.ts
-│   ├── phoenix-perps.ts
-│   ├── ai-providers.ts
-│   ├── news-search.ts
-│   └── index.ts
+├── components/             # Bloomberg panels + Perps* (root-only extras)
+├── services/               # birdeye, helius, phoenix, automaton-bridge, ai, news
 ├── skills/
-│   └── solana-wallet.ts
-├── rebrand.test.ts
-└── readme-brand.test.ts
+│   ├── solana-wallet.ts
+│   └── automaton-skill.ts
+├── packages/               # optional package registry helpers
+└── *.test.ts               # rebrand, readme, automaton integration
 ```
 
-**Scripts (root `package.json`):** `dev`, `run`, `build`, `build:lib`, `start`, `setup`, `status`, `wallet`, `typecheck`, `lint`, `test`, `clean`.  
-**Engines:** Node ≥ 18, Bun ≥ 1.0.  
-**TS:** `tsconfig.json` — ES2022, `moduleResolution: bundler`, `jsx: react-jsx`, path aliases `@/*`, `@components/*`, `@services/*`, `@engine/*`, `@skills/*`, `@config/*`.
+**Scripts (root `package.json`):** `dev`, `run`, `build`, `build:lib`, `start`, `setup`, `status`, `wallet`, `automaton:*`, `typecheck`, `lint`, `test`, `clean`.  
+**Engines:** Node ≥ 18, Bun ≥ 1.0 for monorepo scripts.
 
 ---
 
-## Package `tui/` layout
+## Package `tui/` layout (upgraded)
 
 ```text
 tui/
-├── package.json            # @x402solana/dark-clawd
-├── bun.lock
-├── tsconfig.json           # same path-alias shape as root
+├── package.json            # @x402solana/dark-clawd (directory: "tui")
+├── tsconfig.json
+├── tui.ts                  # ★ monorepo runTui() entry
 ├── .env.example            # committed template
 ├── .eslintrc.cjs
-├── install.sh              # one-shot installer → cheshireterminal.ai/dark-clawd
-├── Dockerfile              # sandbox image: dark-clawd sandbox :18790
-├── fly.toml                # app dark-clawd-sandbox, region iad, /health
+├── install.sh              # one-shot installer (GitHub raw preferred)
+├── Dockerfile              # sandbox image
+├── fly.toml                # dark-clawd-sandbox
+├── CHANGELOG.md
 ├── LICENSE
 ├── README.md
-├── dist/                   # cli.js · index.js · yoga.wasm (build artifacts)
+├── scripts/fix-shebang.mjs
+├── dist/                   # cli.js · index.js · yoga.wasm
 └── src/
-    ├── cli.tsx             # + trade / automate / kit / sandbox commands
-    ├── App.tsx
+    ├── cli.tsx             # tools · agent · trade · automate · kit · sandbox · automaton
+    ├── App.tsx             # Ink shell · views [1]–[6] AUTOMATON
     ├── index.ts
+    ├── product.ts          # hub / npm / install identity
     ├── openclawd.ts
     ├── config/
     ├── engine/clawd-agent.ts
-    ├── components/         # market TUI (no Perps* panels in this tree)
+    ├── components/         # market TUI + AutomatonPanel
     ├── services/
-    │   ├── …birdeye/helius/phoenix/ai/news…
+    │   ├── birdeye* · helius · phoenix · ai · news
+    │   ├── automaton-bridge.ts
     │   ├── trade-automation.ts
     │   ├── sandbox-server.ts
     │   └── mpp-payments.ts
-    ├── skills/solana-wallet.ts
-    ├── rebrand.test.ts
-    └── trade-automation.test.ts
+    ├── tools/              # 171 SOL GPT catalog + runner
+    ├── agent/              # OpenRouter harness
+    ├── skills/
+    └── *.test.ts           # product, npm, catalog, package-communication, …
 ```
 
-**Bins (built package):** `dark-clawd` · `clawd` · `clawd-tui` → `dist/cli.js`.  
-**Publish files:** `dist`, `install.sh`, `fly.toml`, `Dockerfile`, `README.md`, `LICENSE`.  
-**Repository field (package):** `directory: dark-clawd` (product path); root package may still list workspace `directory: dark-ralph`.
+**Bins:** `dark-clawd` · `clawd` · `clawd-tui` → `dist/cli.js` (Node shebang).  
+**Publish files:** `dist`, `install.sh`, `fly.toml`, `Dockerfile`, `README.md`, `LICENSE`, `CHANGELOG.md`.
 
-### Deploy / install (from real package files)
+### Deploy / install
 
 ```bash
-# One-shot
-curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
+# Preferred one-shot (GitHub raw — free)
+curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
+
+# npm
+npm install -g @x402solana/dark-clawd
 
 # Local package
 cd tui && bun install && cp .env.example .env && bun run run
 
+# Monorepo bridge
+bun scripts/run-tui.ts
+
 # Fly sandbox
 cd tui && fly launch --copy-config && fly deploy
-# Dockerfile CMD: bun run dist/cli.js sandbox --port 18790 --host 0.0.0.0
 ```
 
 ---
@@ -156,8 +175,8 @@ OPENROUTER_MODEL=minimax/minimax-m2.7
 
 ### Config schema keys (Zod)
 
-`apiKeys` · `openclawd` · `phoenix` · `solana` · `clawd` · `errorHandling`  
-Agent env: `CLAWD_AUTO_MODE`, `CLAWD_RECURSION_DEPTH`, `CLAWD_THOUGHT_INTERVAL`, `CLAWD_MAX_ITERATIONS` (see `config/schema.ts`).
+`apiKeys` · `openclawd` · `phoenix` · `solana` · `clawd` · `automaton` · `errorHandling`  
+Agent env: `CLAWD_AUTO_MODE`, `CLAWD_RECURSION_DEPTH`, `CLAWD_THOUGHT_INTERVAL`, `CLAWD_MAX_ITERATIONS`.
 
 ---
 
@@ -165,7 +184,22 @@ Agent env: `CLAWD_AUTO_MODE`, `CLAWD_RECURSION_DEPTH`, `CLAWD_THOUGHT_INTERVAL`,
 
 Before publishing the package surface:
 
-1. Prefer developing and testing in `tui/` when changing product behavior.
-2. Mirror shared OpenClawd defaults and Birdeye/provider wiring into root `src/` when both trees are used.
-3. Rebuild `tui/dist/` via `bun run build && bun run build:lib` (copies `yoga.wasm`).
+1. Prefer developing and testing in **`tui/`** when changing product behavior.
+2. Mirror shared OpenClawd defaults and Birdeye/provider/Automaton wiring into root `src/` when both trees are used.
+3. Rebuild `tui/dist/` via `cd tui && bun run build && bun run build:lib`.
 4. Never commit `tui/.env` secrets — only `.env.example`.
+5. Ensure monorepo consumers still resolve **`tui/tui.ts`** (`runTui`).
+
+---
+
+## Messaging channels (port wave)
+
+| Channel | Path | Notes |
+| --- | --- | --- |
+| Telegram | `telegram/` | Grammy bot, pairing, media |
+| Signal | `signal/` | Daemon + monitor; `loadWebMedia` from `web/media` |
+| Slack | `slack/` | Monitor, threads, registry |
+| WhatsApp web | `web/` | Login QR, inbound, auto-reply; pure units e.g. `vcard` |
+| WhatsApp helpers | `whatsapp/` | Normalize |
+
+Shared: `routing/`, `sessions/`, `utils/`. See [MONOREPO.md](./MONOREPO.md).

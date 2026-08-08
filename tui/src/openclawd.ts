@@ -20,6 +20,8 @@ export const OPENCLAWD_ROUTES = {
   docs: '/docs',
   /** Local sovereign runtime surface (vendored ../automaton). */
   automaton: '/automaton',
+  /** Local AutoResearch + OpenClawd memory API (vendored ../llm-wiki-tang). */
+  research: '/research',
 } as const;
 
 export type OpenClawdRoute = keyof typeof OPENCLAWD_ROUTES;
@@ -39,10 +41,20 @@ export const OPENCLAWD_CAPABILITIES = [
     localPath: '../automaton/',
     description: 'Sovereign agent runtime (heartbeat, survival, constitution)',
   },
+  {
+    key: 'research',
+    route: 'research',
+    backendPath: '/api/v1/research',
+    localPath: '../llm-wiki-tang/',
+    description: 'Local AutoResearch + OpenClawd memory (llm-wiki-tang FastAPI)',
+  },
 ] as const;
 
 /** Relative path from the monorepo root (sibling of tui/). */
 export const OPENCLAWD_AUTOMATON_PACKAGE = 'automaton' as const;
+
+/** Relative path from the monorepo root (sibling of tui/). */
+export const OPENCLAWD_LLM_WIKI_TANG_PACKAGE = 'llm-wiki-tang' as const;
 
 export function getOpenClawdRouteUrl(route: OpenClawdRoute): string {
   return `${OPENCLAWD_SITE_URL}${OPENCLAWD_ROUTES[route]}`;

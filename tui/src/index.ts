@@ -13,6 +13,7 @@ export * from './services/birdeye.js';
 export * from './services/ai-providers.js';
 export * from './services/news-search.js';
 export * from './services/automaton-bridge.js';
+export * from './services/llm-wiki-tang-bridge.js';
 
 // Core Components
 export * from './components/Header.js';

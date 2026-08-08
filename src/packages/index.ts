@@ -1,6 +1,7 @@
 export {
   bootstrapPackageRegistry,
   getAutomatonInterop,
+  getLlmWikiTangInterop,
   getPackageStatus,
   getSessionKeyInterop,
   getUtilsInterop,

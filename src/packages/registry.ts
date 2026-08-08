@@ -31,6 +31,13 @@ import {
   planAutomatonProxy,
   resolveAutomatonRoot,
 } from '../services/automaton-bridge.ts';
+import {
+  formatLlmWikiTangStatusReport,
+  getLlmWikiTangIntegrationStatus,
+  isLlmWikiTangPresent,
+  loadLlmWikiTangPyProject,
+  resolveLlmWikiTangRoot,
+} from '../services/llm-wiki-tang-bridge.ts';
 
 export type PackageKind = 'channel' | 'support' | 'meta';
 
@@ -47,7 +54,8 @@ export type PackageId =
   | 'scripts'
   | 'skills'
   | 'wizard'
-  | 'automaton';
+  | 'automaton'
+  | 'llm-wiki-tang';
 
 export interface PackageDescriptor {
   id: PackageId;
@@ -187,6 +195,15 @@ const DESCRIPTORS: PackageDescriptor[] = [
     description:
       'Vendored Clawd Automaton sovereign runtime (heartbeat, Conway, constitution)',
   },
+  {
+    id: 'llm-wiki-tang',
+    kind: 'meta',
+    dir: 'llm-wiki-tang',
+    pureEntries: [],
+    heavyEntries: ['api/main.py'],
+    description:
+      'Local OpenClawd AutoResearch + memory API for clawd-tui (Python FastAPI)',
+  },
 ];
 
 /** Resolve monorepo root (parent of `src/`). */
@@ -278,6 +295,31 @@ export function getAutomatonInterop(darkClawdRoot = resolveDarkClawdRoot()) {
     isPresent: () => isAutomatonPresent(autoRoot),
     loadConstitution: () => loadAutomatonConstitution(autoRoot),
     planProxy: planAutomatonProxy,
+  };
+}
+
+/**
+ * llm-wiki-tang interop via `src/services/llm-wiki-tang-bridge.ts`.
+ * Reads real pyproject.toml + key paths; never requires uvicorn/Python import.
+ */
+export function getLlmWikiTangInterop(darkClawdRoot = resolveDarkClawdRoot()) {
+  const status = getLlmWikiTangIntegrationStatus(darkClawdRoot);
+  const wikiRoot = resolveLlmWikiTangRoot(darkClawdRoot);
+  return {
+    present: status.present,
+    root: status.root,
+    packageName: status.packageName,
+    version: status.version,
+    description: status.description,
+    requiresPython: status.requiresPython,
+    paths: status.paths,
+    researchApiUrl: status.researchApiUrl,
+    uvicornCmd: status.uvicornCmd,
+    darkClawdRole: status.darkClawdRole,
+    formatStatusReport: () => formatLlmWikiTangStatusReport(status),
+    resolveRoot: () => wikiRoot,
+    isPresent: () => isLlmWikiTangPresent(wikiRoot),
+    loadPyProject: () => loadLlmWikiTangPyProject(wikiRoot),
   };
 }
 
@@ -398,6 +440,7 @@ export function bootstrapPackageRegistry(root = resolveDarkClawdRoot()) {
   const support = statuses.filter((s) => s.kind === 'support');
   const meta = statuses.filter((s) => s.kind === 'meta');
   const automaton = getAutomatonInterop(root);
+  const llmWikiTang = getLlmWikiTangInterop(root);
   return {
     root,
     product: 'Dark Clawd',
@@ -424,6 +467,16 @@ export function bootstrapPackageRegistry(root = resolveDarkClawdRoot()) {
       constitutionLaws: automaton.constitutionLaws,
       root: automaton.root,
       bins: automaton.bins,
+    },
+    /** Local AutoResearch / OpenClawd memory API (`llm-wiki-tang/`). */
+    llmWikiTang: {
+      present: llmWikiTang.present,
+      packageName: llmWikiTang.packageName,
+      version: llmWikiTang.version,
+      root: llmWikiTang.root,
+      apiMainPresent: llmWikiTang.paths.apiMain,
+      researchApiUrl: llmWikiTang.researchApiUrl,
+      uvicornCmd: llmWikiTang.uvicornCmd,
     },
   };
 }

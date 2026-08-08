@@ -33,6 +33,12 @@ import {
   tryRunAutomatonEntrypoint,
 } from './services/automaton-bridge.js';
 import {
+  formatLlmWikiTangStatusReport,
+  getLlmWikiTangIntegrationStatus,
+  getLlmWikiTangPaths,
+  probeResearchApiHealth,
+} from './services/llm-wiki-tang-bridge.js';
+import {
   formatWelcomeBanner,
   PACKAGE_VERSION,
   PRODUCT_GITHUB_URL,
@@ -473,6 +479,68 @@ automatonCmd
 
 automatonCmd.action(() => {
   console.log(formatAutomatonStatusReport(getAutomatonIntegrationStatus()));
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// llm-wiki-tang bridge (sibling ../llm-wiki-tang — AutoResearch / memory API)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const researchApiCmd = program
+  .command('research-api')
+  .description('Dark Clawd TUI ↔ llm-wiki-tang (local AutoResearch + OpenClawd memory)');
+
+researchApiCmd
+  .command('status')
+  .description('Show vendored llm-wiki-tang package status and RESEARCH_API_URL')
+  .action(() => {
+    console.log(chalk.greenBright(formatLlmWikiTangStatusReport(getLlmWikiTangIntegrationStatus())));
+  });
+
+researchApiCmd
+  .command('paths')
+  .description('List llm-wiki-tang tree entrypoints used by Dark Clawd TUI')
+  .action(() => {
+    const s = getLlmWikiTangIntegrationStatus();
+    const paths = getLlmWikiTangPaths(s.root);
+    console.log(
+      boxen(
+        [
+          `${chalk.cyan('root'.padEnd(16))} ${s.root}`,
+          `${chalk.cyan('pyproject'.padEnd(16))} ${paths.pyproject}`,
+          `${chalk.cyan('api/main.py'.padEnd(16))} ${paths.apiMain}`,
+          `${chalk.cyan('src'.padEnd(16))} ${paths.srcDir}`,
+          `${chalk.cyan('tests'.padEnd(16))} ${paths.testsDir}`,
+          `${chalk.cyan('memory'.padEnd(16))} ${paths.openclawdMemoryDir}`,
+          `${chalk.cyan('RESEARCH_API'.padEnd(16))} ${s.researchApiUrl}`,
+          `${chalk.cyan('package'.padEnd(16))} ${s.packageName ?? '—'}@${s.version ?? '?'}`,
+        ].join('\n'),
+        { padding: 1, borderColor: 'cyan', title: 'llm-wiki-tang Paths' },
+      ),
+    );
+  });
+
+researchApiCmd
+  .command('health')
+  .description('Probe RESEARCH_API_URL /health (soft-fail if uvicorn is down)')
+  .action(async () => {
+    const s = getLlmWikiTangIntegrationStatus();
+    console.log(chalk.gray(`Probing ${s.researchApiUrl}/health …`));
+    const probe = await probeResearchApiHealth(s.researchApiUrl);
+    if (probe.ok) {
+      console.log(chalk.green(`OK ${probe.status} ${probe.url}`));
+      if (probe.body) console.log(probe.body);
+    } else {
+      console.log(chalk.yellow(`DOWN ${probe.url}`));
+      if (probe.error) console.log(chalk.gray(probe.error));
+      console.log(chalk.cyan('\nStart the API:'));
+      console.log(chalk.white(`  cd ${s.root} && ${s.uvicornCmd}`));
+      console.log(chalk.white(`  export RESEARCH_API_URL=${s.researchApiUrl}`));
+      process.exitCode = 1;
+    }
+  });
+
+researchApiCmd.action(() => {
+  console.log(formatLlmWikiTangStatusReport(getLlmWikiTangIntegrationStatus()));
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

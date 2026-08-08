@@ -34,6 +34,7 @@ Dark Clawd is the OpenClawd Bun + Ink terminal app for Solana market surveillanc
 - **Six terminal views**: Market, Trading, Portfolio, Analytics, Agent, and **Automaton** (sovereign runtime bridge).
 - **Autonomous agent loop** through `ClawdAgent`, with configurable auto/interactive mode and recursive market thoughts.
 - **Automaton integration** via sibling `../automaton` — constitution laws, bridge status, CLI `clawd automaton …`.
+- **llm-wiki-tang AutoResearch** via sibling `../llm-wiki-tang` — local FastAPI research/memory; `/research` prefers `RESEARCH_API_URL`, falls back to Perplexity.
 - **Provider integrations** for Helius, Birdeye, Phoenix perps through the Rise SDK, xAI Grok, Perplexity, OpenRouter, News API, SERP API, and Financial Datasets.
 - **Solana wallet tools** for local wallet creation, address display, balance lookup, and portfolio context.
 - **Terminal-native controls** with number-key navigation, refresh/help shortcuts, and an agent command surface.
@@ -50,6 +51,7 @@ Dark Clawd is the OpenClawd Bun + Ink terminal app for Solana market surveillanc
 | Agent API | `https://agents.openclawd.biz` |
 | Local config module | `src/openclawd.ts` |
 | Automaton (local) | sibling `../automaton` · view **[6]** · `/automaton` |
+| AutoResearch (local) | sibling `../llm-wiki-tang` · `RESEARCH_API_URL` · `/research` |
 
 ## Automaton bridge
 
@@ -64,6 +66,27 @@ bun run automaton:install && bun run automaton:build
 TUI: press **`6`** (or **`A`**) for the Automaton panel. Agent chat: `/automaton`, `/automaton constitution`.
 
 See also monorepo docs: [`../docs/AUTOMATON_INTEGRATION.md`](../docs/AUTOMATON_INTEGRATION.md).
+
+## llm-wiki-tang (local AutoResearch)
+
+Sibling package `../llm-wiki-tang` is the offline-safe research + OpenClawd memory API used by `/research` and `/autoloop`.
+
+```bash
+# Discover (no Python required)
+bun run research-api:status
+bun run research-api:paths
+
+# Serve API (Python ≥3.10 + uvicorn)
+bun run research-api:serve
+# or: cd ../llm-wiki-tang && python3 -m uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
+
+# Point TUI at it
+export RESEARCH_API_URL=http://localhost:8000
+bun run research-api:health
+bun start
+```
+
+Agent chat: `/research <topic>` tries `RESEARCH_API_URL` first, then Perplexity if the local API is down.
 
 ## Quick Start
 
@@ -233,7 +256,7 @@ See [mpp/README.md](../mpp/README.md) for full Solana MPP docs.
 | `/wallet` | Display wallet context |
 | `/news` | Fetch crypto news |
 | `/search <query>` | Search through Grok |
-| `/research <topic>` | Research through Perplexity |
+| `/research <topic>` | Research via llm-wiki-tang (`RESEARCH_API_URL`) → Perplexity fallback |
 | `/perps` | List Phoenix perpetual futures markets |
 | `/perp <symbol>` | Inspect one Phoenix perpetual futures market |
 | `/prophecy` | Generate Dark Clawd predictions |

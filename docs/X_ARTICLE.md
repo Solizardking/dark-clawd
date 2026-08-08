@@ -10,7 +10,16 @@ Journal.
 
 That frame clicked for us immediately.
 
-We have been building around it inside the Clawd stack: **Dark Clawd** as the OODA orchestrator (forged from Ralph on Solana), the Clawd TUI (`tui/` package — `clawd` · `dark-clawd` · `clawd-tui`) as the approved local development terminal, Clawd Code for deeper repo work, Automaton for heartbeat/agent loops, Solana MPP (x402 / HTTP 402) for agent payments, and Solana programs for the onchain pieces.
+We have been building around it inside the Clawd stack: **Dark Clawd** as the OODA orchestrator (forged from Ralph on Solana), the **Clawd TUI** (`tui/` package — `clawd` · `dark-clawd` · `clawd-tui`, monorepo entry `tui/tui.ts` → `runTui`) as the approved local development terminal, Clawd Code for deeper repo work, Automaton for heartbeat/agent loops, messaging channels (Telegram · Signal · Slack · WhatsApp web), Solana MPP (x402 / HTTP 402) for agent payments, PumpFun copy-trading (`clawdbot-pumpfun/`), and Solana programs for the onchain pieces.
+
+The monorepo keeps product and ports co-located:
+
+- **Product TUI** — `tui/` (npm `@x402solana/dark-clawd`, 171 SOL GPT tools, Bloomberg views)
+- **Dev TUI** — `src/` (aligned with `tui/` before publish)
+- **Agents** — `agent/` (Python OODA), `automaton/` (sovereign runtime)
+- **Channels** — `telegram/`, `signal/`, `slack/`, `web/`
+- **Shared spine** — `routing/`, `sessions/`, `providers/`, `utils/`, `scripts/`
+- **Economy** — `mpp/`, research `llm-wiki-tang/`
 
 The result is a single working direction:
 
@@ -53,9 +62,16 @@ Shoutout @GeoffreyHuntley for the Ralph OODA pattern.
 We are tying it into @clawddevs:
 
 Dark Clawd = orchestrator  
-Clawd TUI = approved local dev terminal  
+Clawd TUI (`tui/`) = approved local dev terminal  
 Clawd Code = repo work  
 CLAWD bot = commit context  
-Solana + x402 = agent economy
+Channels + routing = agent I/O  
+Solana + x402 = agent economy  
 
 Agents should operate, leave receipts, and keep secrets out of public surfaces.
+
+## Links
+
+- Hub: https://cheshireterminal.ai/dark-clawd  
+- GitHub: https://github.com/Solizardking/dark-clawd  
+- Docs map: [MONOREPO.md](./MONOREPO.md) · [OPENCLAWD_ADAPTATION.md](./OPENCLAWD_ADAPTATION.md)  

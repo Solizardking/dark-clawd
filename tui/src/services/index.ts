@@ -89,3 +89,24 @@ export {
   type AutomatonIntegrationStatus,
   type AutomatonProxyCommand,
 } from './automaton-bridge.js';
+
+// llm-wiki-tang bridge (sibling ../llm-wiki-tang — AutoResearch / memory API)
+export {
+  LLM_WIKI_TANG_DIR,
+  DEFAULT_RESEARCH_API_URL,
+  DEFAULT_UVICORN_CMD,
+  resolveTuiPackageRoot,
+  resolveLlmWikiTangRoot,
+  getLlmWikiTangPaths,
+  isLlmWikiTangPresent,
+  parsePyProjectToml,
+  loadLlmWikiTangPyProject,
+  getResearchApiUrl,
+  getLlmWikiTangIntegrationStatus,
+  formatLlmWikiTangStatusReport,
+  probeResearchApiHealth,
+  researchViaLlmWikiTang,
+  type LlmWikiTangPyProject,
+  type LlmWikiTangPaths,
+  type LlmWikiTangIntegrationStatus,
+} from './llm-wiki-tang-bridge.js';

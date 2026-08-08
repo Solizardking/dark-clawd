@@ -1,7 +1,10 @@
 # Dark Clawd · SOL GPT tool catalog
 
-> Full **171**-tool non-custodial Solana catalog (same surface as SOL GPT / cheshireterminal.ai).
-> Source: `tui/src/tools/catalog.ts` · runner: `tui/src/tools/runner.ts`
+> Full **171**-tool non-custodial Solana catalog (same surface as SOL GPT / cheshireterminal.ai).  
+> **Canonical source (TUI upgrade):** `tui/src/tools/catalog.ts` · runner: `tui/src/tools/runner.ts` · harness: `tui/src/agent/openrouter-harness.ts`
+
+Product package: **`tui/`** → npm `@x402solana/dark-clawd`.  
+Monorepo map: [MONOREPO.md](./MONOREPO.md).
 
 ## Totals
 
@@ -37,6 +40,8 @@
 
 ## CLI
 
+Run from an install of `@x402solana/dark-clawd` (built from **`tui/`**), or `cd tui && bun run src/cli.tsx …`:
+
 ```bash
 dark-clawd tools                 # summary
 dark-clawd tools catalog         # JSON totals
@@ -57,6 +62,7 @@ dark-clawd agent --wallet <addr> --max-steps 12
 
 ### Agent harness
 
+- Module: `tui/src/agent/openrouter-harness.ts`
 - OpenRouter Chat Completions (`OPENROUTER_API_KEY`)
 - Loads **122 core tools** every turn (SOL GPT / Kimi style)
 - Specialty tools via `search_tools` then exact name
@@ -64,6 +70,8 @@ dark-clawd agent --wallet <addr> --max-steps 12
 - Tool display: start/end lines (create-agent-tui-style)
 
 ## Agent chat (TUI)
+
+Inside the Bloomberg / Agent view (`dark-clawd run`):
 
 ```
 /tools
@@ -73,6 +81,8 @@ dark-clawd agent --wallet <addr> --max-steps 12
 ```
 
 ## Env (selected)
+
+Template: `tui/.env.example`
 
 ```bash
 OPENROUTER_API_KEY=              # dark-clawd agent
@@ -91,8 +101,17 @@ BROWSER_USE_API_KEY=             # cloud browser tools
 SOLANA_WALLET=                   # default wallet context
 ```
 
+## Tests (shipped catalog)
+
+```bash
+cd tui && bun test src/tools/catalog.test.ts src/agent/openrouter-harness.test.ts src/package-communication.test.ts
+```
+
+Asserts 171 tools, group totals, non-custodial `prepare_*`, and product communication.
+
 ## Product links
 
 - Hub: https://cheshireterminal.ai/dark-clawd
 - GitHub: https://github.com/Solizardking/dark-clawd
-- npm package: `@x402solana/dark-clawd`
+- npm package: `@x402solana/dark-clawd` (publish root: **`tui/`**)
+- Install: `curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash`

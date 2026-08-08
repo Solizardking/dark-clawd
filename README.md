@@ -502,28 +502,44 @@ dark-clawd/                      # github.com/Solizardking/dark-clawd
 ├── telegram/ · slack/ · signal/ · web/ · whatsapp/   # messaging channel packages
 ├── routing/ · sessions/ · utils/ · providers/        # support packages (pure interop)
 ├── scripts/ · skills/ · wizard/ · automaton/         # meta / tooling + sovereign runtime
+├── llm-wiki-tang/               # ★ AutoResearch + OpenClawd memory API (Python FastAPI)
 │
 ├── agent/                       # Python OODA (Ralph) loop
-├── mpp/ · llm-wiki-tang/
-└── docs/ SOL_GPT_TOOLS.md · AUTOMATON_INTEGRATION.md · …
+├── mpp/
+├── clawdbot-pumpfun/            # Rust PumpFun copy-trading crate
+└── docs/ MONOREPO.md · OPENCLAWD · SOL_GPT_TOOLS · AUTOMATON · …
 ```
 
 ### Channel / support package discovery
 
-Root trees (`telegram`, `slack`, `signal`, `web`, `routing`, `sessions`, `utils`, `providers`, `automaton`, …) are first-class workspace packages. Core discovers them via:
+Root trees (`telegram`, `slack`, `signal`, `web`, `routing`, `sessions`, `utils`, `providers`, `automaton`, `llm-wiki-tang`, …) are first-class workspace packages. Core discovers them via:
 
 ```ts
-import { bootstrapPackageRegistry, roundTripChannelSessionKey, getAutomatonInterop } from './src/packages/index.ts';
+import {
+  bootstrapPackageRegistry,
+  roundTripChannelSessionKey,
+  getAutomatonInterop,
+  getLlmWikiTangInterop,
+} from './src/packages/index.ts';
 
 const boot = bootstrapPackageRegistry();
-// boot.channels · boot.support · boot.meta · boot.sessionKeys · boot.utils · boot.automaton
+// boot.channels · boot.support · boot.meta · boot.sessionKeys · boot.utils
+// boot.automaton · boot.llmWikiTang
 const { key } = roundTripChannelSessionKey(); // agent:main:telegram:dm:user1
 const auto = getAutomatonInterop();           // constitution + status via automaton-bridge
+const wiki = getLlmWikiTangInterop();         // pyproject name/version + api/main.py paths
 ```
 
 - **Channels** (telegram/slack/signal/web): listed when present; full `index.ts` load is **optional** (soft-fail if OpenClaw parents like grammy are missing).
 - **Support** (routing/sessions/utils/providers): pure modules load for session-key + boolean helpers without a full bot runtime.
 - **Automaton** (`automaton/`): registered as meta; bridge surfaces package name, constitution laws, bins, and entrypoints without a full Conway provision. Heavy `src/index.ts` soft-fails when runtime deps are incomplete. CLI: `bun run automaton:status`.
+- **llm-wiki-tang** (`llm-wiki-tang/`): local AutoResearch / OpenClawd memory API for clawd-tui. Core reads `pyproject.toml` + key paths (`api/main.py`, `src/`, `tests/`) without starting uvicorn. Local run:
+
+```bash
+cd llm-wiki-tang && python3 -m uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
+RESEARCH_API_URL=http://localhost:8000 npm start   # or dark-clawd
+```
+
 - Run: `bun run test:interop`
 
 ---
@@ -582,15 +598,18 @@ After each Python OODA agent run, a PnL summary is output:
 
 ## 📚 DOCUMENTATION
 
+- [`docs/MONOREPO.md`](docs/MONOREPO.md) — **full workspace map** (TUI upgrade + all integrated trees)
 - [`darkclawd.md`](darkclawd.md) — **Cheshire hub handoff** (add client at cheshireterminal.ai/dark-clawd)
 - [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md) — **171-tool catalog**, CLI, agent, env
-- [`tui/README.md`](tui/README.md) — package surface (npm install surface)
+- [`docs/OPENCLAWD_ADAPTATION.md`](docs/OPENCLAWD_ADAPTATION.md) — OpenClawd mapping + **TUI upgrade**
+- [`tui/README.md`](tui/README.md) — package surface (npm install surface; `tui/tui.ts` → `runTui`)
 - [`tui/CHANGELOG.md`](tui/CHANGELOG.md) · [`CHANGELOG.md`](CHANGELOG.md)
 - [`docs/AUTOMATON_INTEGRATION.md`](docs/AUTOMATON_INTEGRATION.md) — Automaton bridge
 - [`docs/BIRDEYE_INTEGRATION.md`](docs/BIRDEYE_INTEGRATION.md) — Birdeye setup
-- [`docs/OPENCLAWD_ADAPTATION.md`](docs/OPENCLAWD_ADAPTATION.md) — OpenClawd mapping
+- [`docs/X_ARTICLE.md`](docs/X_ARTICLE.md) — narrative / social draft
 - [`agent/README.md`](agent/README.md) · [`agent/RALPH.md`](agent/RALPH.md) — OODA loop
 - [`automaton/README.md`](automaton/README.md) — sovereign runtime
+- [`clawdbot-pumpfun/README.md`](clawdbot-pumpfun/README.md) — PumpFun copy-trading (Rust)
 
 ---
 
