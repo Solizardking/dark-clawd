@@ -107,7 +107,10 @@ describe('trade automation kit', () => {
       const status = await fetch(`http://127.0.0.1:${port}/api/status`);
       const sj = (await status.json()) as { ok?: boolean; kit?: { install?: { curl?: string } } };
       expect(sj.ok).toBe(true);
-      expect(String(sj.kit?.install?.curl || '')).toContain('dark-clawd/install.sh');
+      // Shipped product install prefers GitHub raw tui/install.sh (see product.ts).
+      const curl = String(sj.kit?.install?.curl || '');
+      expect(curl).toContain('install.sh');
+      expect(curl).toMatch(/dark-clawd|tui\/install\.sh/);
 
       const trade = await fetch(`http://127.0.0.1:${port}/api/trade/plan`, {
         method: 'POST',
