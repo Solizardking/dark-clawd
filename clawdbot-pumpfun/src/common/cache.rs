@@ -412,4 +412,78 @@ lazy_static! {
     pub static ref TARGET_WALLET_TOKENS: TargetWalletTokens = TargetWalletTokens::new();
     pub static ref BOUGHT_TOKENS: BoughtTokensTracker = BoughtTokensTracker::new();
     pub static ref TOKEN_BALANCE_CACHE: TokenBalanceCache = TokenBalanceCache::new(300); // 5 minutes TTL
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn target_wallet_tokens_insert_contains_remove_size() {
+        let set = TargetWalletTokens::new();
+        assert_eq!(set.size(), 0);
+        assert!(!set.contains("mintA"));
+
+        // First insert returns true (new key); second insert of same mint is false.
+        assert!(set.insert("mintA".to_string()));
+        assert!(!set.insert("mintA".to_string()));
+        assert!(set.contains("mintA"));
+        assert_eq!(set.size(), 1);
+
+        assert!(set.insert("mintB".to_string()));
+        assert_eq!(set.size(), 2);
+        let all = set.get_all();
+        assert!(all.contains("mintA") && all.contains("mintB"));
+
+        assert!(set.remove("mintA"));
+        assert!(!set.contains("mintA"));
+        assert!(set.contains("mintB"));
+        assert_eq!(set.size(), 1);
+
+        set.clear();
+        assert_eq!(set.size(), 0);
+        assert!(!set.contains("mintB"));
+    }
+
+    #[test]
+    fn cache_entry_expires_after_ttl() {
+        let entry = CacheEntry::new(42u32, 0);
+        // TTL of 0 seconds → expired immediately (or within the same instant).
+        std::thread::sleep(std::time::Duration::from_millis(5));
+        assert!(entry.is_expired());
+        assert_eq!(entry.value, 42);
+
+        let fresh = CacheEntry::new("ok", 3600);
+        assert!(!fresh.is_expired());
+        assert_eq!(fresh.value, "ok");
+    }
+
+    #[test]
+    fn token_balance_info_staleness() {
+        let info = TokenBalanceInfo::new(1_000, 1.0, 6, true);
+        // Fresh entry is not stale against a long TTL.
+        assert!(!info.is_stale(60));
+        // is_stale uses `duration > max_age_seconds` (strict), so within the same
+        // second a max_age of 0 is still not stale.
+        assert!(!info.is_stale(0));
+        assert_eq!(info.balance_raw, 1_000);
+        assert_eq!(info.decimals, 6);
+        assert!(info.verified);
+    }
+
+    #[test]
+    fn token_balance_cache_roundtrip() {
+        let cache = TokenBalanceCache::new(300);
+        assert_eq!(cache.size(), 0);
+        cache.cache_balance("mintX".into(), 500, 0.5, 9, true);
+        let got = cache.get_balance("mintX").expect("cached balance");
+        assert_eq!(got.balance_raw, 500);
+        assert!((got.balance_decimal - 0.5).abs() < f64::EPSILON);
+        assert_eq!(got.decimals, 9);
+        assert!(got.verified);
+        assert_eq!(cache.size(), 1);
+        cache.remove_balance("mintX");
+        assert!(cache.get_balance("mintX").is_none());
+        assert_eq!(cache.size(), 0);
+    }
 } 
