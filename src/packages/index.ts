@@ -1,5 +1,6 @@
 export {
   bootstrapPackageRegistry,
+  getAutomatonInterop,
   getPackageStatus,
   getSessionKeyInterop,
   getUtilsInterop,
@@ -7,6 +8,7 @@ export {
   listPackageDescriptors,
   listPackageStatuses,
   listPresentChannelIds,
+  listPresentMetaIds,
   listPresentSupportIds,
   listSupportPackageIds,
   resolveDarkClawdRoot,

@@ -23,6 +23,14 @@ import {
 } from '../../sessions/session-key-utils.ts';
 import { parseBooleanValue } from '../../utils/boolean.ts';
 import { normalizeAccountId } from '../../utils/account-id.ts';
+import {
+  formatAutomatonStatusReport,
+  getAutomatonIntegrationStatus,
+  isAutomatonPresent,
+  loadAutomatonConstitution,
+  planAutomatonProxy,
+  resolveAutomatonRoot,
+} from '../services/automaton-bridge.ts';
 
 export type PackageKind = 'channel' | 'support' | 'meta';
 
@@ -249,11 +257,7 @@ export function listPresentMetaIds(root = resolveDarkClawdRoot()): string[] {
  * Presence / constitution / status without requiring a full Conway provision.
  */
 export function getAutomatonInterop(root = resolveDarkClawdRoot()) {
-  // Lazy dynamic require-style import kept synchronous via relative path:
-  // the bridge is pure fs/spawn and does not need OpenClaw parents.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const bridge = require('../services/automaton-bridge.ts') as typeof import('../services/automaton-bridge.ts');
-  const status = bridge.getAutomatonIntegrationStatus(root);
+  const status = getAutomatonIntegrationStatus(root);
   return {
     present: status.present,
     root: status.root,
@@ -265,11 +269,11 @@ export function getAutomatonInterop(root = resolveDarkClawdRoot()) {
     bins: status.bins,
     darkClawdRole: status.darkClawdRole,
     lineageNote: status.lineageNote,
-    formatStatusReport: () => bridge.formatAutomatonStatusReport(status),
-    resolveRoot: () => bridge.resolveAutomatonRoot(root),
-    isPresent: () => bridge.isAutomatonPresent(root),
-    loadConstitution: () => bridge.loadAutomatonConstitution(root),
-    planProxy: bridge.planAutomatonProxy,
+    formatStatusReport: () => formatAutomatonStatusReport(status),
+    resolveRoot: () => resolveAutomatonRoot(root),
+    isPresent: () => isAutomatonPresent(root),
+    loadConstitution: () => loadAutomatonConstitution(root),
+    planProxy: planAutomatonProxy,
   };
 }
 
@@ -389,6 +393,7 @@ export function bootstrapPackageRegistry(root = resolveDarkClawdRoot()) {
   const channels = statuses.filter((s) => s.kind === 'channel');
   const support = statuses.filter((s) => s.kind === 'support');
   const meta = statuses.filter((s) => s.kind === 'meta');
+  const automaton = getAutomatonInterop(root);
   return {
     root,
     product: 'Dark Clawd',
@@ -406,5 +411,15 @@ export function bootstrapPackageRegistry(root = resolveDarkClawdRoot()) {
     meta: meta.map((s) => ({ id: s.id, present: s.present })),
     sessionKeys: getSessionKeyInterop(),
     utils: getUtilsInterop(),
+    /** Vendored Automaton sovereign runtime (present when `automaton/` is on disk). */
+    automaton: {
+      present: automaton.present,
+      packageName: automaton.packageName,
+      version: automaton.version,
+      constitutionPresent: automaton.constitutionPresent,
+      constitutionLaws: automaton.constitutionLaws,
+      root: automaton.root,
+      bins: automaton.bins,
+    },
   };
 }
