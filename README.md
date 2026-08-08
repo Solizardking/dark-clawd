@@ -159,7 +159,7 @@ dark-clawd setup            # interactive env wizard
 │  │  CUSTODY   prepare_* = user-signed only · server never holds keys    │   │
 │  └──────────────────────────────────────────────────────────────────────┘   │
 │                                                                             │
-│  SUBSYSTEMS  automaton/ · agent/ (Ralph OODA) · mpp/ · llm-wiki-tang/       │
+│  SUBSYSTEMS  automaton/ · agent/ (Ralph OODA) · mpp/ · llm-wiki-tang (Fly)  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -176,6 +176,7 @@ Hub client handoff for Cheshire: [`darkclawd.md`](darkclawd.md).
 | **GitHub** | [github.com/Solizardking/dark-clawd](https://github.com/Solizardking/dark-clawd) |
 | **npm** | [`@x402solana/dark-clawd`](https://www.npmjs.com/package/@x402solana/dark-clawd) |
 | **Release** | [v1.1.1](https://github.com/Solizardking/dark-clawd/releases/tag/v1.1.1) |
+| **Research API (Fly)** | [https://dark-clawd-research.fly.dev](https://dark-clawd-research.fly.dev) · [`GET /health`](https://dark-clawd-research.fly.dev/health) |
 | **Tools docs** | [`docs/SOL_GPT_TOOLS.md`](docs/SOL_GPT_TOOLS.md) |
 | **Hub handoff** | [`darkclawd.md`](darkclawd.md) |
 
@@ -507,7 +508,7 @@ Full deep map: **[`docs/MONOREPO.md`](docs/MONOREPO.md)**. Below is the GitHub-f
 | **Agent (Ralph)** | [`agent/`](agent/) | Python OODA loop (`loop.py`, `RALPH.md`) |
 | **MPP** | [`mpp/`](mpp/) | Solana Machine Payments Protocol (HTTP 402 / x402) |
 | **PumpFun bot** | [`clawdbot-pumpfun/`](clawdbot-pumpfun/) | Rust copy-trading crate |
-| **Research API** | [`llm-wiki-tang/`](llm-wiki-tang/) | AutoResearch + OpenClawd memory (Python FastAPI) |
+| **Research API** | [`llm-wiki-tang/`](llm-wiki-tang/) | AutoResearch + OpenClawd memory (Python FastAPI) · **Fly:** [dark-clawd-research.fly.dev](https://dark-clawd-research.fly.dev) |
 | **Docs** | [`docs/`](docs/) | MONOREPO, OpenClawd, tools, Birdeye, Automaton |
 
 Root metadata: [`package.json`](package.json) · [`bun.lock`](bun.lock) · [`tsconfig.json`](tsconfig.json) · [`LICENSE`](LICENSE) · [`CHANGELOG.md`](CHANGELOG.md) · [`darkclawd.md`](darkclawd.md) · [`.gitignore`](.gitignore).
@@ -563,14 +564,35 @@ const wiki = getLlmWikiTangInterop();         // pyproject name/version + api/ma
 - **Channels** (telegram/slack/signal/web): listed when present; full `index.ts` load is **optional** (soft-fail if OpenClaw parents like grammy are missing).
 - **Support** (routing/sessions/utils/providers): pure modules load for session-key + boolean helpers without a full bot runtime.
 - **Automaton** (`automaton/`): registered as meta; bridge surfaces package name, constitution laws, bins, and entrypoints without a full Conway provision. Heavy `src/index.ts` soft-fails when runtime deps are incomplete. CLI: `bun run automaton:status`.
-- **llm-wiki-tang** (`llm-wiki-tang/`): local AutoResearch / OpenClawd memory API for clawd-tui. Core reads `pyproject.toml` + key paths (`api/main.py`, `src/`, `tests/`) without starting uvicorn. Local run:
+- **llm-wiki-tang** (`llm-wiki-tang/`): AutoResearch / OpenClawd memory API for Dark Clawd TUI. Core reads `pyproject.toml` + key paths (`api/main.py`, `src/`, `tests/`) without starting uvicorn. **Deployed on Fly.**
+
+### Research API (Fly production)
+
+| | |
+|---|---|
+| **App** | `dark-clawd-research` |
+| **Public URL** | https://dark-clawd-research.fly.dev |
+| **Health** | https://dark-clawd-research.fly.dev/health → `{"status":"ok"}` |
+| **Docs UI** | https://dark-clawd-research.fly.dev/docs |
+| **Config** | [`llm-wiki-tang/fly.toml`](llm-wiki-tang/fly.toml) · [`llm-wiki-tang/Dockerfile`](llm-wiki-tang/Dockerfile) |
+| **Package README** | [`llm-wiki-tang/README.md`](llm-wiki-tang/README.md) |
 
 ```bash
+# Point Dark Clawd at the live API
+export RESEARCH_API_URL=https://dark-clawd-research.fly.dev
+dark-clawd   # or: cd tui && bun start
+# /research <topic> uses this URL first (Perplexity fallback)
+
+# Local dev API
 cd llm-wiki-tang && python3 -m uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
-RESEARCH_API_URL=http://localhost:8000 npm start   # or dark-clawd
+export RESEARCH_API_URL=http://127.0.0.1:8000
+
+# Re-deploy
+cd llm-wiki-tang && fly deploy
+curl -sS https://dark-clawd-research.fly.dev/health
 ```
 
-- Run: `bun run test:interop`
+- Run package interop: `bun run test:interop`
 
 ---
 
