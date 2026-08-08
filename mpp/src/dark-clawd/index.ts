@@ -239,7 +239,7 @@ export function createDarkClawdMpp(config: DarkClawdMppConfig) {
       return { ok: true, challenge: ch };
     }
 
-    // Live: require signature-shaped proof; full on-chain verify is via solana-mpp/server
+    // Live: require signature-shaped proof; full on-chain verify via @x402solana/solana-mpp/server
     if (credential.type === 'paper') {
       return {
         ok: false,

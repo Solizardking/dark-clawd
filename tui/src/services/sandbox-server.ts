@@ -176,7 +176,7 @@ export function createSandboxHandler(opts: SandboxServerOptions = {}) {
             rpcConfigured: Boolean(_rpc),
           },
           docs: DARK_CLAWD_PRODUCT_URL,
-          npm: 'npm install solana-mpp mppx',
+          npm: 'npm install @x402solana/solana-mpp',
           endpoints: {
             charge: 'POST /api/mpp/charge',
             sessionOpen: 'POST /api/mpp/session/open',
@@ -284,8 +284,8 @@ a{color:#5eead4}code{background:#111;padding:.2rem .4rem;border-radius:4px}</sty
 <li><a href="/api/mpp">/api/mpp</a> (Solana MPP · HTTP 402)</li>
 </ul>
 <p>Product: <a href="${DARK_CLAWD_PRODUCT_URL}">${DARK_CLAWD_PRODUCT_URL}</a></p>
-<p>Install: <code>curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash</code></p>
-<p>MPP: <code>npm install solana-mpp mppx</code></p>
+<p>Install: <code>curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash</code></p>
+<p>MPP: <code>npm install @x402solana/solana-mpp</code> (not unscoped solana-mpp)</p>
 </body></html>`,
           'text/html',
         );

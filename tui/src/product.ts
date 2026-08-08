@@ -11,12 +11,15 @@ export const PACKAGE_VERSION = '1.1.1';
 export const PRODUCT_HUB_URL = 'https://cheshireterminal.ai/dark-clawd';
 export const PRODUCT_GITHUB_URL = 'https://github.com/Solizardking/dark-clawd';
 export const PRODUCT_GITHUB_ISSUES_URL = `${PRODUCT_GITHUB_URL}/issues`;
+/** Hub proxy — may return HTTP 402 until the route is free/proxied. Prefer GitHub. */
 export const PRODUCT_INSTALL_SH_URL =
   'https://cheshireterminal.ai/api/dark-clawd/install.sh';
 export const PRODUCT_INSTALL_SH_GITHUB_URL =
   'https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh';
-export const PRODUCT_INSTALL_CURL = `curl -fsSL ${PRODUCT_INSTALL_SH_URL} | bash`;
-export const PRODUCT_INSTALL_CURL_GITHUB = `curl -fsSL ${PRODUCT_INSTALL_SH_GITHUB_URL} | bash`;
+/** Preferred one-shot install (GitHub raw always free). */
+export const PRODUCT_INSTALL_CURL = `curl -fsSL ${PRODUCT_INSTALL_SH_GITHUB_URL} | bash`;
+export const PRODUCT_INSTALL_CURL_GITHUB = PRODUCT_INSTALL_CURL;
+export const PRODUCT_INSTALL_CURL_HUB = `curl -fsSL ${PRODUCT_INSTALL_SH_URL} | bash`;
 /** Prebuilt package attached to the GitHub release (works without registry publish). */
 export const PRODUCT_RELEASE_TGZ_URL = `https://github.com/Solizardking/dark-clawd/releases/download/v${PACKAGE_VERSION}/x402solana-dark-clawd-${PACKAGE_VERSION}.tgz`;
 export const PRODUCT_NPM_INSTALL = `npm install -g ${PACKAGE_NAME}`;
@@ -44,7 +47,7 @@ export function formatWelcomeBanner(): string {
     '',
     'Install (Node ≥18):',
     `  ${PRODUCT_NPM_INSTALL}`,
-    `  # or: ${PRODUCT_INSTALL_CURL_GITHUB}`,
+    `  # or: ${PRODUCT_INSTALL_CURL}`,
     `  # release tarball: ${PRODUCT_NPM_INSTALL_TGZ}`,
     '',
     'Quick start:',

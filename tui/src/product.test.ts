@@ -20,7 +20,11 @@ describe('product identity (first release)', () => {
     expect(PRODUCT_HUB_URL).toBe('https://cheshireterminal.ai/dark-clawd');
     expect(PRODUCT_GITHUB_URL).toBe('https://github.com/Solizardking/dark-clawd');
     expect(PRODUCT_NPM_INSTALL).toContain(PACKAGE_NAME);
-    expect(PRODUCT_INSTALL_CURL).toContain('cheshireterminal.ai/api/dark-clawd/install.sh');
+    // Preferred curl is GitHub raw (hub /api/dark-clawd/install.sh currently 402s)
+    expect(PRODUCT_INSTALL_CURL).toContain(
+      'raw.githubusercontent.com/Solizardking/dark-clawd',
+    );
+    expect(PRODUCT_INSTALL_CURL).toContain('install.sh');
   });
 
   test('welcome banner and info are user-friendly and link product surfaces', () => {

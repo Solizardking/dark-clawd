@@ -8,8 +8,8 @@
  * Compatible with the solana-mpp charge model:
  *   challenge (amount, recipient, mint, reference) → client pays → retry + credential
  *
- * Full charge methods (broadcast + on-chain verify) live in `solana-mpp/server`
- * via mppx + @solana/kit when peers are installed.
+ * Full charge methods (broadcast + on-chain verify) live in
+ * `@x402solana/solana-mpp/server` via mppx + @solana/kit when peers are installed.
  */
 
 import { createHash, randomBytes } from 'node:crypto';
@@ -239,9 +239,12 @@ export function createDarkClawdMpp(config: DarkClawdMppConfig) {
       return { ok: true, challenge: ch };
     }
 
-    // Live: require signature-shaped proof; full on-chain verify is via solana-mpp/server
+    // Live: require signature-shaped proof; full on-chain verify via @x402solana/solana-mpp/server
     if (credential.type === 'paper') {
-      return { ok: false, error: 'live mode rejects paper credentials — use solana-mpp/client charge' };
+      return {
+        ok: false,
+        error: 'live mode rejects paper credentials — use @x402solana/solana-mpp/client charge',
+      };
     }
     if (!credential.signature && !credential.transaction) {
       return { ok: false, error: 'live mode requires transaction or signature credential' };
@@ -301,9 +304,9 @@ export function createDarkClawdMpp(config: DarkClawdMppConfig) {
       hint:
         mode === 'paper'
           ? 'Paper mode: POST back with X-MPP-Credential paper proof using the reference key'
-          : 'Live mode: pay via solana-mpp/client then retry with payment credential',
+          : 'Live mode: pay via @x402solana/solana-mpp/client then retry with payment credential',
       docs: 'https://cheshireterminal.ai/dark-clawd',
-      npm: 'npm install solana-mpp mppx',
+      npm: 'npm install @x402solana/solana-mpp mppx',
     };
     const response = new Response(JSON.stringify(body, null, 2), {
       status: 402,
@@ -424,10 +427,12 @@ export type DarkClawdMpp = ReturnType<typeof createDarkClawdMpp>;
 export const DARK_CLAWD_MPP_PRODUCT = {
   product: 'Dark Clawd Solana MPP',
   productUrl: 'https://cheshireterminal.ai/dark-clawd',
-  npm: 'solana-mpp',
+  npm: '@x402solana/solana-mpp',
   install: {
-    npm: 'npm install solana-mpp mppx',
-    curl: 'curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash',
+    npm: 'npm install @x402solana/solana-mpp',
+    npmWithPeers: 'npm install @x402solana/solana-mpp mppx @solana/kit',
+    curl: 'curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash',
+    curlHub: 'curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash',
   },
   intents: ['charge', 'session'] as const,
   rails: ['sol', 'USDC', 'SPL'],

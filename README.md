@@ -40,11 +40,11 @@ dark-clawd status
 ### Alternate install paths
 
 ```bash
-# One-shot installer (registry first, then GitHub release tarball)
+# One-shot installer (GitHub raw — preferred; free)
 curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
 
-# Hub-hosted installer (when proxied by cheshireterminal.ai)
-curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
+# Hub installer (optional — may return HTTP 402 until route is free)
+# curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
 
 # Release tarball mirror (works offline from npm registry)
 npm install -g https://github.com/Solizardking/dark-clawd/releases/download/v1.1.1/x402solana-dark-clawd-1.1.1.tgz

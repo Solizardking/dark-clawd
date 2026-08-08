@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/**/*.{ts,tsx}",
     "test": "bun test --pass-with-no-tests './src/**/*.test.ts' './src/**/*.test.tsx' './src/**/*.spec.ts' './src/**/*.spec.tsx'",
-    "test:interop": "bun test './src/packages/**/*.test.ts'",
+    "test:interop": "bun test src/packages",
     "clean": "rm -rf dist",
     "prepublishOnly": "bun run build && bun run build:lib"
   },

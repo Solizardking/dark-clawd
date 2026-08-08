@@ -173,7 +173,8 @@ fly deploy
 Machine Payments Protocol over SPL — pay-per-call charges and prepaid sessions.
 
 ```bash
-npm install solana-mpp mppx
+npm install @x402solana/solana-mpp
+# optional peers for full charge: npm install mppx @solana/kit
 ```
 
 Local package: `../mpp` (vendors `@solana/mpp` 0.5 charge methods + Dark Clawd paper/live helpers).
@@ -184,7 +185,7 @@ Local package: `../mpp` (vendors `@solana/mpp` 0.5 charge methods + Dark Clawd p
 | **Session** | Deposit → metered requests → top-up → refund on close |
 
 ```ts
-import { createDarkClawdMpp } from 'solana-mpp/dark-clawd'
+import { createDarkClawdMpp } from '@x402solana/solana-mpp/dark-clawd'
 
 const mpp = createDarkClawdMpp({
   recipient: process.env.MPP_RECIPIENT!,
