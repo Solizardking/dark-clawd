@@ -52,7 +52,7 @@ describe('tui package communication', () => {
     const entry = join(TUI_ROOT, 'tui.ts');
     const text = readFileSync(entry, 'utf-8');
     expect(text).toContain('export async function runTui');
-    expect(text).toContain("from './src/App.js'");
+    expect(text).toMatch(/from\s+["']\.\/src\/App\.js["']/);
 
     for (const consumer of ['scripts/run-tui.ts', 'wizard/onboarding.finalize.ts']) {
       const abs = join(REPO_ROOT, consumer);
@@ -70,8 +70,11 @@ describe('tui package communication', () => {
     expect(PRODUCT_INSTALL_CURL).toContain('install.sh');
 
     const catalog = getSolGptShippedToolCatalog();
-    expect(catalog.length).toBe(SOL_GPT_TOOL_COUNT);
+    expect(catalog.product).toBe('Dark Clawd');
+    expect(catalog.total).toBe(171);
+    expect(catalog.tools).toHaveLength(171);
     expect(SOL_GPT_TOOL_COUNT).toBe(171);
+    expect(catalog.total).toBe(SOL_GPT_TOOL_COUNT);
   });
 
   test('src production modules resolve internal relative imports', () => {
