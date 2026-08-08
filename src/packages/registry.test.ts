@@ -7,11 +7,13 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   bootstrapPackageRegistry,
+  getAutomatonInterop,
   getPackageStatus,
   getSessionKeyInterop,
   getUtilsInterop,
   listPackageStatuses,
   listPresentChannelIds,
+  listPresentMetaIds,
   listPresentSupportIds,
   resolveDarkClawdRoot,
   roundTripChannelSessionKey,
@@ -34,6 +36,7 @@ describe('package registry (channel + support interop)', () => {
       'scripts',
       'skills',
       'wizard',
+      'automaton',
     ]) {
       expect(existsSync(join(ROOT, dir))).toBe(true);
     }
@@ -54,8 +57,29 @@ describe('package registry (channel + support interop)', () => {
       expect(supportIds).toContain(id);
     }
 
+    const metaIds = boot.meta.filter((m) => m.present).map((m) => m.id);
+    expect(metaIds).toContain('automaton');
+    expect(listPresentMetaIds(ROOT)).toContain('automaton');
+
     expect(listPresentChannelIds(ROOT).length).toBeGreaterThanOrEqual(4);
     expect(listPresentSupportIds(ROOT).length).toBeGreaterThanOrEqual(4);
+  });
+
+  test('automaton is discoverable via registry + bridge interop', () => {
+    expect(getPackageStatus('automaton', ROOT).present).toBe(true);
+
+    const interop = getAutomatonInterop(ROOT);
+    expect(interop.present).toBe(true);
+    expect(interop.packageName).toBeTruthy();
+    expect(interop.constitutionPresent).toBe(true);
+    expect(interop.constitutionLaws.length).toBeGreaterThan(0);
+    expect(interop.loadConstitution()?.length ?? 0).toBeGreaterThan(0);
+    expect(interop.formatStatusReport()).toContain('AUTOMATON');
+
+    const boot = bootstrapPackageRegistry(ROOT);
+    expect(boot.automaton.present).toBe(true);
+    expect(boot.automaton.constitutionPresent).toBe(true);
+    expect(String(boot.automaton.packageName || '')).toMatch(/automaton/i);
   });
 
   test('routing↔sessions session-key round-trip for agent:main:telegram:dm:user1', () => {
@@ -110,9 +134,18 @@ describe('package registry (channel + support interop)', () => {
       expect(String(tg.error || '').length).toBeGreaterThan(0);
     }
 
+    // Automaton config soft-loads without running CLI main; bridge remains source of truth
+    const autoCfg = await softLoadPackageEntry('automaton', 'src/config.ts', ROOT);
+    expect(typeof autoCfg.ok).toBe('boolean');
+    if (!autoCfg.ok) {
+      expect(String(autoCfg.error || '').length).toBeGreaterThan(0);
+    }
+    // Presence + bridge path still works
+    expect(getPackageStatus('automaton', ROOT).present).toBe(true);
+
     // Bootstrap / list must still work after soft-fail attempt
     expect(getPackageStatus('telegram', ROOT).present).toBe(true);
-    expect(listPackageStatuses(ROOT).length).toBeGreaterThanOrEqual(10);
+    expect(listPackageStatuses(ROOT).length).toBeGreaterThanOrEqual(11);
   });
 
   test('core registry import path does not throw when bootstrapping', () => {

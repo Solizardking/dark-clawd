@@ -501,27 +501,29 @@ dark-clawd/                      # github.com/Solizardking/dark-clawd
 │
 ├── telegram/ · slack/ · signal/ · web/ · whatsapp/   # messaging channel packages
 ├── routing/ · sessions/ · utils/ · providers/        # support packages (pure interop)
-├── scripts/ · skills/ · wizard/                      # meta / tooling packages
+├── scripts/ · skills/ · wizard/ · automaton/         # meta / tooling + sovereign runtime
 │
 ├── agent/                       # Python OODA (Ralph) loop
-├── automaton/ · mpp/ · llm-wiki-tang/
+├── mpp/ · llm-wiki-tang/
 └── docs/ SOL_GPT_TOOLS.md · AUTOMATON_INTEGRATION.md · …
 ```
 
 ### Channel / support package discovery
 
-Root trees (`telegram`, `slack`, `signal`, `web`, `routing`, `sessions`, `utils`, `providers`, …) are first-class workspace packages. Core discovers them via:
+Root trees (`telegram`, `slack`, `signal`, `web`, `routing`, `sessions`, `utils`, `providers`, `automaton`, …) are first-class workspace packages. Core discovers them via:
 
 ```ts
-import { bootstrapPackageRegistry, roundTripChannelSessionKey } from './src/packages/index.ts';
+import { bootstrapPackageRegistry, roundTripChannelSessionKey, getAutomatonInterop } from './src/packages/index.ts';
 
 const boot = bootstrapPackageRegistry();
-// boot.channels · boot.support · boot.sessionKeys · boot.utils
+// boot.channels · boot.support · boot.meta · boot.sessionKeys · boot.utils · boot.automaton
 const { key } = roundTripChannelSessionKey(); // agent:main:telegram:dm:user1
+const auto = getAutomatonInterop();           // constitution + status via automaton-bridge
 ```
 
 - **Channels** (telegram/slack/signal/web): listed when present; full `index.ts` load is **optional** (soft-fail if OpenClaw parents like grammy are missing).
 - **Support** (routing/sessions/utils/providers): pure modules load for session-key + boolean helpers without a full bot runtime.
+- **Automaton** (`automaton/`): registered as meta; bridge surfaces package name, constitution laws, bins, and entrypoints without a full Conway provision. Heavy `src/index.ts` soft-fails when runtime deps are incomplete. CLI: `bun run automaton:status`.
 - Run: `bun run test:interop`
 
 ---

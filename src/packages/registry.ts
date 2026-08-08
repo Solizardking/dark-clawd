@@ -181,8 +181,9 @@ const DESCRIPTORS: PackageDescriptor[] = [
     id: 'automaton',
     kind: 'meta',
     dir: 'automaton',
-    pureEntries: [],
-    heavyEntries: ['src/index.ts', 'src/config.ts'],
+    // Prefer config over src/index.ts — index is a CLI entry that runs on import.
+    pureEntries: ['src/config.ts'],
+    heavyEntries: ['src/index.ts'],
     description:
       'Vendored Clawd Automaton sovereign runtime (heartbeat, Conway, constitution)',
   },
@@ -255,9 +256,12 @@ export function listPresentMetaIds(root = resolveDarkClawdRoot()): string[] {
 /**
  * Automaton interop via the existing core bridge (`src/services/automaton-bridge.ts`).
  * Presence / constitution / status without requiring a full Conway provision.
+ *
+ * @param darkClawdRoot monorepo root (parent of `automaton/`); bridge resolves the tree.
  */
-export function getAutomatonInterop(root = resolveDarkClawdRoot()) {
-  const status = getAutomatonIntegrationStatus(root);
+export function getAutomatonInterop(darkClawdRoot = resolveDarkClawdRoot()) {
+  const status = getAutomatonIntegrationStatus(darkClawdRoot);
+  const autoRoot = resolveAutomatonRoot(darkClawdRoot);
   return {
     present: status.present,
     root: status.root,
@@ -270,9 +274,9 @@ export function getAutomatonInterop(root = resolveDarkClawdRoot()) {
     darkClawdRole: status.darkClawdRole,
     lineageNote: status.lineageNote,
     formatStatusReport: () => formatAutomatonStatusReport(status),
-    resolveRoot: () => resolveAutomatonRoot(root),
-    isPresent: () => isAutomatonPresent(root),
-    loadConstitution: () => loadAutomatonConstitution(root),
+    resolveRoot: () => autoRoot,
+    isPresent: () => isAutomatonPresent(autoRoot),
+    loadConstitution: () => loadAutomatonConstitution(autoRoot),
     planProxy: planAutomatonProxy,
   };
 }
