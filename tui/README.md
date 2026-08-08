@@ -80,11 +80,14 @@ bun run research-api:paths
 bun run research-api:serve
 # or: cd ../llm-wiki-tang && python3 -m uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
 
-# Point TUI at it
+# Point TUI at it (local or Fly)
 export RESEARCH_API_URL=http://localhost:8000
+# export RESEARCH_API_URL=https://dark-clawd-research.fly.dev
 bun run research-api:health
 bun start
 ```
+
+**Fly production API:** https://dark-clawd-research.fly.dev (`GET /health` → `{"status":"ok"}`). Deploy from `../llm-wiki-tang` with `fly deploy`.
 
 Agent chat: `/research <topic>` tries `RESEARCH_API_URL` first, then Perplexity if the local API is down.
 

@@ -1,0 +1,40 @@
+# Dark Clawd research API (llm-wiki-tang) — Fly Machine
+#
+# First time:
+#   cd llm-wiki-tang
+#   fly apps create dark-clawd-research
+#   fly deploy
+#
+# Public URL: https://dark-clawd-research.fly.dev
+# TUI:        export RESEARCH_API_URL=https://dark-clawd-research.fly.dev
+# Hub:        https://cheshireterminal.ai/dark-clawd
+
+app = "dark-clawd-research"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  HOST = "0.0.0.0"
+  PORT = "8000"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "15s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1

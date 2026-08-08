@@ -1,14 +1,14 @@
 # llm-wiki-tang
 
-Local OpenClawd AutoResearch API used by `clawd-tui`.
+Local OpenClawd AutoResearch API used by `clawd-tui` / Dark Clawd.
 
-Run it:
+## Local (dev)
 
 ```bash
 python3 -m uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Smoke-check (do **not** expect an HTML UI at bare `/` — use these):
+Smoke-check:
 
 ```bash
 curl -s http://127.0.0.1:8000/health    # {"status":"ok"}
@@ -16,11 +16,50 @@ curl -s http://127.0.0.1:8000/          # JSON landing + endpoint map
 open http://127.0.0.1:8000/docs         # interactive OpenAPI UI
 ```
 
-Then point the TUI at it:
+## Production-style local (same as Fly CMD)
 
 ```bash
-RESEARCH_API_URL=http://localhost:8000 npm start
-# or from tui/: bun run research-api:health
+# no --reload; bind all interfaces; honor PORT
+PORT=8000 python3 -m uvicorn api.main:app --host 0.0.0.0 --port 8000
+```
+
+Or Docker:
+
+```bash
+docker build -t llm-wiki-tang .
+docker run --rm -p 8000:8000 llm-wiki-tang
+```
+
+## Deploy to Fly.io
+
+| | |
+|---|---|
+| **App** | `dark-clawd-research` |
+| **Region** | `iad` |
+| **Public URL** | https://dark-clawd-research.fly.dev |
+| **Health** | `GET /health` → `{"status":"ok"}` |
+| **Config** | `fly.toml` · `Dockerfile` |
+
+```bash
+cd llm-wiki-tang
+fly apps create dark-clawd-research   # first time only
+fly deploy
+curl -sS https://dark-clawd-research.fly.dev/health
+```
+
+## Point Dark Clawd TUI at the API
+
+```bash
+# Local
+export RESEARCH_API_URL=http://127.0.0.1:8000
+
+# Fly
+export RESEARCH_API_URL=https://dark-clawd-research.fly.dev
+
+# From monorepo tui/
+bun run research-api:health
+bun start
+# or: npm start / dark-clawd
 ```
 
 The service is intentionally offline-safe for demos and local development. It does
