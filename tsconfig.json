@@ -30,11 +30,15 @@
       "@services/*": ["src/services/*"],
       "@engine/*": ["src/engine/*"],
       "@skills/*": ["src/skills/*"],
-      "@config/*": ["src/config/*"]
+      "@config/*": ["src/config/*"],
+      "@packages/*": ["src/packages/*"],
+      "@routing/*": ["routing/*"],
+      "@sessions/*": ["sessions/*"],
+      "@utils/*": ["utils/*"]
     },
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "."
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "routing/**/*", "sessions/**/*", "utils/**/*"],
+  "exclude": ["node_modules", "dist", "tui", "web", "telegram", "slack", "signal"]
 }

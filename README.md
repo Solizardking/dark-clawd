@@ -490,28 +490,39 @@ dark-clawd/                      # github.com/Solizardking/dark-clawd
 │
 ├── tui/                         # ★ Preferred npm surface (publish from here)
 │   ├── package.json             # @x402solana/dark-clawd@1.1.1
-│   ├── install.sh               # one-shot installer
-│   ├── CHANGELOG.md · README.md
-│   ├── scripts/fix-shebang.mjs  # Node shebang for npm bins
-│   └── src/
-│       ├── cli.tsx              # dark-clawd CLI entry
-│       ├── product.ts           # hub / github / npm identity
-│       ├── agent/               # OpenRouter harness
-│       ├── tools/               # 171 SOL GPT catalog + runner
-│       ├── engine/clawd-agent.ts
-│       ├── services/            # birdeye · helius · phoenix · trade · sandbox
-│       └── components/          # Bloomberg TUI panels
+│   ├── install.sh · scripts/fix-shebang.mjs
+│   └── src/ cli · tools (171) · agent harness · services · components
 │
-├── src/                         # monorepo root TUI (dev twin)
+├── src/                         # core TUI + package registry
+│   ├── packages/                # ★ discovers root channel/support packages
+│   │   ├── registry.ts          # bootstrapPackageRegistry · softLoad · session keys
+│   │   └── registry.test.ts     # interop tests (routing↔sessions, utils, soft-fail)
+│   └── … engine · services · components
+│
+├── telegram/ · slack/ · signal/ · web/ · whatsapp/   # messaging channel packages
+├── routing/ · sessions/ · utils/ · providers/        # support packages (pure interop)
+├── scripts/ · skills/ · wizard/                      # meta / tooling packages
+│
 ├── agent/                       # Python OODA (Ralph) loop
-├── automaton/                   # Sovereign runtime bridge
-├── mpp/ · llm-wiki-tang/
-└── docs/
-    ├── SOL_GPT_TOOLS.md         # full 171-tool reference
-    ├── AUTOMATON_INTEGRATION.md
-    ├── BIRDEYE_INTEGRATION.md
-    └── OPENCLAWD_ADAPTATION.md
+├── automaton/ · mpp/ · llm-wiki-tang/
+└── docs/ SOL_GPT_TOOLS.md · AUTOMATON_INTEGRATION.md · …
 ```
+
+### Channel / support package discovery
+
+Root trees (`telegram`, `slack`, `signal`, `web`, `routing`, `sessions`, `utils`, `providers`, …) are first-class workspace packages. Core discovers them via:
+
+```ts
+import { bootstrapPackageRegistry, roundTripChannelSessionKey } from './src/packages/index.ts';
+
+const boot = bootstrapPackageRegistry();
+// boot.channels · boot.support · boot.sessionKeys · boot.utils
+const { key } = roundTripChannelSessionKey(); // agent:main:telegram:dm:user1
+```
+
+- **Channels** (telegram/slack/signal/web): listed when present; full `index.ts` load is **optional** (soft-fail if OpenClaw parents like grammy are missing).
+- **Support** (routing/sessions/utils/providers): pure modules load for session-key + boolean helpers without a full bot runtime.
+- Run: `bun run test:interop`
 
 ---
 
