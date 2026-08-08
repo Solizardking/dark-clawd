@@ -1,7 +1,7 @@
 {
-  "name": "solana-mpp",
+  "name": "@x402solana/solana-mpp",
   "version": "0.5.0",
-  "description": "Solana MPP \u2014 SPL token payments for the Machine Payments Protocol (HTTP 402). Powered by @solana/mpp charge methods; Dark Clawd automation kit included.",
+  "description": "Solana MPP for Dark Clawd \u2014 SPL token payments for the Machine Payments Protocol (HTTP 402). Scoped package (unscoped solana-mpp on npm is a different project).",
   "license": "ISC",
   "type": "module",
   "repository": {
@@ -81,5 +81,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

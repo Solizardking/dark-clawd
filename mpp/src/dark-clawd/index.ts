@@ -8,8 +8,8 @@
  * Compatible with the solana-mpp charge model:
  *   challenge (amount, recipient, mint, reference) → client pays → retry + credential
  *
- * Full charge methods (broadcast + on-chain verify) live in `solana-mpp/server`
- * via mppx + @solana/kit when peers are installed.
+ * Full charge methods (broadcast + on-chain verify) live in
+ * `@x402solana/solana-mpp/server` via mppx + @solana/kit when peers are installed.
  */
 
 import { createHash, randomBytes } from 'node:crypto';
@@ -241,7 +241,10 @@ export function createDarkClawdMpp(config: DarkClawdMppConfig) {
 
     // Live: require signature-shaped proof; full on-chain verify is via solana-mpp/server
     if (credential.type === 'paper') {
-      return { ok: false, error: 'live mode rejects paper credentials — use solana-mpp/client charge' };
+      return {
+        ok: false,
+        error: 'live mode rejects paper credentials — use @x402solana/solana-mpp/client charge',
+      };
     }
     if (!credential.signature && !credential.transaction) {
       return { ok: false, error: 'live mode requires transaction or signature credential' };
@@ -301,9 +304,9 @@ export function createDarkClawdMpp(config: DarkClawdMppConfig) {
       hint:
         mode === 'paper'
           ? 'Paper mode: POST back with X-MPP-Credential paper proof using the reference key'
-          : 'Live mode: pay via solana-mpp/client then retry with payment credential',
+          : 'Live mode: pay via @x402solana/solana-mpp/client then retry with payment credential',
       docs: 'https://cheshireterminal.ai/dark-clawd',
-      npm: 'npm install solana-mpp mppx',
+      npm: 'npm install @x402solana/solana-mpp mppx',
     };
     const response = new Response(JSON.stringify(body, null, 2), {
       status: 402,
