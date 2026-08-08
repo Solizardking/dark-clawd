@@ -5,6 +5,21 @@ def test_health(client):
     assert response.json() == {"status": "ok"}
 
 
+def test_root_landing_and_favicon(client):
+    """Browser hits / and /favicon.ico must not 404 (was noisy when opening the base URL)."""
+    root = client.get("/")
+    assert root.status_code == 200
+    body = root.json()
+    assert body["status"] == "ok"
+    assert body["service"] == "llm-wiki-tang"
+    assert body["health"] == "/health"
+    assert body["docs"] == "/docs"
+    assert "research" in body["endpoints"]
+
+    fav = client.get("/favicon.ico")
+    assert fav.status_code == 200
+
+
 def test_chain_research_contract_and_run_history(client):
     response = client.post(
         "/api/v1/research/chain",

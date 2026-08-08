@@ -8,10 +8,19 @@ Run it:
 python3 -m uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
+Smoke-check (do **not** expect an HTML UI at bare `/` — use these):
+
+```bash
+curl -s http://127.0.0.1:8000/health    # {"status":"ok"}
+curl -s http://127.0.0.1:8000/          # JSON landing + endpoint map
+open http://127.0.0.1:8000/docs         # interactive OpenAPI UI
+```
+
 Then point the TUI at it:
 
 ```bash
 RESEARCH_API_URL=http://localhost:8000 npm start
+# or from tui/: bun run research-api:health
 ```
 
 The service is intentionally offline-safe for demos and local development. It does

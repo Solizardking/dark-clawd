@@ -13,6 +13,49 @@ app = FastAPI(
 )
 
 
+@app.get("/")
+def root() -> dict[str, object]:
+    """Browser-friendly landing — bare / used to 404 (API has no HTML UI at /)."""
+    return {
+        "service": "llm-wiki-tang",
+        "title": "OpenClawd AutoResearch API",
+        "version": "0.1.0",
+        "status": "ok",
+        "health": "/health",
+        "docs": "/docs",
+        "openapi": "/openapi.json",
+        "endpoints": {
+            "memory": [
+                "POST /api/v1/memory/notes",
+                "GET  /api/v1/memory/notes",
+                "GET  /api/v1/memory/search?q=",
+                "GET  /api/v1/memory/links",
+            ],
+            "research": [
+                "POST /api/v1/research/chain",
+                "POST /api/v1/research/defi",
+                "POST /api/v1/research/market",
+                "GET  /api/v1/research/runs",
+            ],
+            "autoloop": [
+                "POST /api/v1/research/autoloop/start",
+                "POST /api/v1/research/autoloop/stop",
+                "GET  /api/v1/research/autoloop/status",
+            ],
+        },
+        "tui": {
+            "env": "RESEARCH_API_URL=http://127.0.0.1:8000",
+            "cli": "clawd research-api status|health",
+        },
+    }
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon() -> dict[str, str]:
+    """Avoid noisy 404s when opening the API URL in a browser."""
+    return {"status": "no-favicon"}
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}

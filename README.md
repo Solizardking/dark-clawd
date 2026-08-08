@@ -483,17 +483,47 @@ CLAWD_SANDBOX_PORT=18790
 
 ## 📁 PROJECT LAYOUT
 
+Full deep map: **[`docs/MONOREPO.md`](docs/MONOREPO.md)**. Below is the GitHub-facing inventory of first-class workspace areas (what you see after `git clone`).
+
+### Monorepo at a glance
+
+| Area | Path | Role |
+|------|------|------|
+| **Product TUI (publish)** | [`tui/`](tui/) | Canonical npm package `@x402solana/dark-clawd` — CLI, Bloomberg TUI, 171 tools, agent harness, `install.sh`, Docker/Fly; monorepo bridge [`tui/tui.ts`](tui/tui.ts) → `runTui` |
+| **Root TUI (dev)** | [`src/`](src/) | Monorepo Ink/CLI entry + package registry; keep aligned with `tui/` before publish |
+| **Telegram** | [`telegram/`](telegram/) | Grammy bot, pairing, media, send |
+| **Signal** | [`signal/`](signal/) | Daemon / monitor / send (uses `web/media`) |
+| **Slack** | [`slack/`](slack/) | Client, monitor, threading |
+| **WhatsApp web** | [`web/`](web/) | Baileys-lineage web channel (login, inbound, auto-reply, media) |
+| **WhatsApp helpers** | [`whatsapp/`](whatsapp/) | Shared normalize helpers |
+| **Routing** | [`routing/`](routing/) | Agent route + session key helpers |
+| **Sessions** | [`sessions/`](sessions/) | Labels, send policy, model/level overrides |
+| **Utils** | [`utils/`](utils/) | Message channel, delivery context, formatting |
+| **Providers** | [`providers/`](providers/) | Model provider helpers (Copilot, Qwen OAuth, …) |
+| **Scripts** | [`scripts/`](scripts/) | Package checks, `run-tui.ts`, setup, smoke |
+| **Wizard** | [`wizard/`](wizard/) | Gateway onboarding (imports `runTui`) |
+| **Skills** | [`skills/`](skills/) | Local agent skills (e.g. zkrouter) |
+| **Automaton** | [`automaton/`](automaton/) | Sovereign agent runtime + constitution |
+| **Agent (Ralph)** | [`agent/`](agent/) | Python OODA loop (`loop.py`, `RALPH.md`) |
+| **MPP** | [`mpp/`](mpp/) | Solana Machine Payments Protocol (HTTP 402 / x402) |
+| **PumpFun bot** | [`clawdbot-pumpfun/`](clawdbot-pumpfun/) | Rust copy-trading crate |
+| **Research API** | [`llm-wiki-tang/`](llm-wiki-tang/) | AutoResearch + OpenClawd memory (Python FastAPI) |
+| **Docs** | [`docs/`](docs/) | MONOREPO, OpenClawd, tools, Birdeye, Automaton |
+
+Root metadata: [`package.json`](package.json) · [`bun.lock`](bun.lock) · [`tsconfig.json`](tsconfig.json) · [`LICENSE`](LICENSE) · [`CHANGELOG.md`](CHANGELOG.md) · [`darkclawd.md`](darkclawd.md) · [`.gitignore`](.gitignore).
+
 ```
 dark-clawd/                      # github.com/Solizardking/dark-clawd
 ├── package.json                 # workspace meta (@x402solana/dark-clawd)
-├── README.md · CHANGELOG.md · LICENSE
+├── README.md · CHANGELOG.md · LICENSE · darkclawd.md
 │
 ├── tui/                         # ★ Preferred npm surface (publish from here)
 │   ├── package.json             # @x402solana/dark-clawd@1.1.1
+│   ├── tui.ts                   # monorepo runTui() for scripts/ + wizard/
 │   ├── install.sh · scripts/fix-shebang.mjs
 │   └── src/ cli · tools (171) · agent harness · services · components
 │
-├── src/                         # core TUI + package registry
+├── src/                         # core TUI + package registry (dev monorepo)
 │   ├── packages/                # ★ discovers root channel/support packages
 │   │   ├── registry.ts          # bootstrapPackageRegistry · softLoad · session keys
 │   │   └── registry.test.ts     # interop tests (routing↔sessions, utils, soft-fail)
@@ -505,14 +535,14 @@ dark-clawd/                      # github.com/Solizardking/dark-clawd
 ├── llm-wiki-tang/               # ★ AutoResearch + OpenClawd memory API (Python FastAPI)
 │
 ├── agent/                       # Python OODA (Ralph) loop
-├── mpp/
+├── mpp/                         # Solana MPP / HTTP 402 payments kit
 ├── clawdbot-pumpfun/            # Rust PumpFun copy-trading crate
-└── docs/ MONOREPO.md · OPENCLAWD · SOL_GPT_TOOLS · AUTOMATON · …
+└── docs/                        # MONOREPO.md · OPENCLAWD · SOL_GPT_TOOLS · AUTOMATON · …
 ```
 
 ### Channel / support package discovery
 
-Root trees (`telegram`, `slack`, `signal`, `web`, `routing`, `sessions`, `utils`, `providers`, `automaton`, `llm-wiki-tang`, …) are first-class workspace packages. Core discovers them via:
+Root trees (`telegram`, `slack`, `signal`, `web`, `whatsapp`, `routing`, `sessions`, `utils`, `providers`, `scripts`, `wizard`, `skills`, `automaton`, `agent`, `mpp`, `clawdbot-pumpfun`, `llm-wiki-tang`, …) are first-class workspace packages. Core discovers many of them via:
 
 ```ts
 import {
