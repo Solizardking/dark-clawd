@@ -38,7 +38,8 @@ export type PackageId =
   | 'providers'
   | 'scripts'
   | 'skills'
-  | 'wizard';
+  | 'wizard'
+  | 'automaton';
 
 export interface PackageDescriptor {
   id: PackageId;
@@ -168,6 +169,15 @@ const DESCRIPTORS: PackageDescriptor[] = [
     heavyEntries: ['onboarding.ts'],
     description: 'Onboarding wizard package',
   },
+  {
+    id: 'automaton',
+    kind: 'meta',
+    dir: 'automaton',
+    pureEntries: [],
+    heavyEntries: ['src/index.ts', 'src/config.ts'],
+    description:
+      'Vendored Clawd Automaton sovereign runtime (heartbeat, Conway, constitution)',
+  },
 ];
 
 /** Resolve monorepo root (parent of `src/`). */
@@ -226,6 +236,41 @@ export function listPresentSupportIds(root = resolveDarkClawdRoot()): string[] {
   return listPackageStatuses(root)
     .filter((s) => s.kind === 'support' && s.present)
     .map((s) => s.id);
+}
+
+export function listPresentMetaIds(root = resolveDarkClawdRoot()): string[] {
+  return listPackageStatuses(root)
+    .filter((s) => s.kind === 'meta' && s.present)
+    .map((s) => s.id);
+}
+
+/**
+ * Automaton interop via the existing core bridge (`src/services/automaton-bridge.ts`).
+ * Presence / constitution / status without requiring a full Conway provision.
+ */
+export function getAutomatonInterop(root = resolveDarkClawdRoot()) {
+  // Lazy dynamic require-style import kept synchronous via relative path:
+  // the bridge is pure fs/spawn and does not need OpenClaw parents.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const bridge = require('../services/automaton-bridge.ts') as typeof import('../services/automaton-bridge.ts');
+  const status = bridge.getAutomatonIntegrationStatus(root);
+  return {
+    present: status.present,
+    root: status.root,
+    packageName: status.packageName,
+    version: status.version,
+    constitutionPresent: status.constitutionPresent,
+    constitutionLaws: status.constitutionLaws,
+    entrypoints: status.entrypoints,
+    bins: status.bins,
+    darkClawdRole: status.darkClawdRole,
+    lineageNote: status.lineageNote,
+    formatStatusReport: () => bridge.formatAutomatonStatusReport(status),
+    resolveRoot: () => bridge.resolveAutomatonRoot(root),
+    isPresent: () => bridge.isAutomatonPresent(root),
+    loadConstitution: () => bridge.loadAutomatonConstitution(root),
+    planProxy: bridge.planAutomatonProxy,
+  };
 }
 
 /** Soft-load a package entry; never throws for missing OpenClaw parents. */
