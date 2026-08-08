@@ -37,7 +37,12 @@ describe('solana-mpp package surface (post-build)', () => {
     expect(pkg.exports['./client']).toBeDefined();
     expect(pkg.exports['./dark-clawd']).toBeDefined();
 
-    for (const sub of ['solana-mpp', 'solana-mpp/server', 'solana-mpp/client', 'solana-mpp/dark-clawd']) {
+    for (const sub of [
+      '@x402solana/solana-mpp',
+      '@x402solana/solana-mpp/server',
+      '@x402solana/solana-mpp/client',
+      '@x402solana/solana-mpp/dark-clawd',
+    ]) {
       const resolved = require.resolve(sub);
       expect(resolved.includes(`${join('mpp', 'dist')}`) || resolved.includes('/dist/')).toBe(true);
       expect(existsSync(resolved)).toBe(true);
@@ -63,14 +68,16 @@ describe('solana-mpp package surface (post-build)', () => {
     }
   });
 
-  test('bin/info.mjs prints solana-mpp + dark-clawd', () => {
+  test('bin/info.mjs prints scoped package + dark-clawd + GitHub install', () => {
     const info = spawnSync(process.execPath, [join(mppRoot, 'bin/info.mjs')], {
       cwd: mppRoot,
       encoding: 'utf8',
     });
     expect(info.status).toBe(0);
     const out = `${info.stdout}\n${info.stderr}`;
-    expect(out).toMatch(/solana-mpp/i);
+    expect(out).toMatch(/@x402solana\/solana-mpp/);
     expect(out).toMatch(/dark-clawd/i);
+    expect(out).toMatch(/raw\.githubusercontent\.com\/Solizardking\/dark-clawd/);
+    expect(out).toMatch(/different/i); // warn about unscoped name collision
   });
 });

@@ -95,7 +95,11 @@ describe('solana-mpp dark-clawd', () => {
 
   test('product metadata points at dark-clawd hub', () => {
     expect(DARK_CLAWD_MPP_PRODUCT.productUrl).toContain('dark-clawd');
-    expect(DARK_CLAWD_MPP_PRODUCT.npm).toBe('solana-mpp');
+    expect(DARK_CLAWD_MPP_PRODUCT.npm).toBe('@x402solana/solana-mpp');
+    expect(DARK_CLAWD_MPP_PRODUCT.install.npm).toContain('@x402solana/solana-mpp');
+    expect(DARK_CLAWD_MPP_PRODUCT.install.curl).toContain(
+      'raw.githubusercontent.com/Solizardking/dark-clawd',
+    );
     expect(DARK_CLAWD_MPP_PRODUCT.intents).toContain('charge');
     expect(DARK_CLAWD_MPP_PRODUCT.intents).toContain('session');
   });

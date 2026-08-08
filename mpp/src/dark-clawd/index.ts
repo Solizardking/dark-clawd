@@ -427,10 +427,15 @@ export type DarkClawdMpp = ReturnType<typeof createDarkClawdMpp>;
 export const DARK_CLAWD_MPP_PRODUCT = {
   product: 'Dark Clawd Solana MPP',
   productUrl: 'https://cheshireterminal.ai/dark-clawd',
-  npm: 'solana-mpp',
+  /** Scoped — unscoped `solana-mpp` on npm is a different package (sendaifun). */
+  npm: '@x402solana/solana-mpp',
   install: {
-    npm: 'npm install solana-mpp mppx',
-    curl: 'curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash',
+    npm: 'npm install @x402solana/solana-mpp',
+    npmWithPeers: 'npm install @x402solana/solana-mpp mppx @solana/kit',
+    /** Prefer GitHub raw; hub /api/dark-clawd/install.sh currently returns HTTP 402. */
+    curl: 'curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash',
+    curlHub:
+      'curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash',
   },
   intents: ['charge', 'session'] as const,
   rails: ['sol', 'USDC', 'SPL'],

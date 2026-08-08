@@ -1,17 +1,54 @@
-# Solana MPP
+# @x402solana/solana-mpp
 
 **Solana Payment Integration for the Machine Payments Protocol (HTTP 402)**  
 SPL token payments · high-throughput · low-cost · on-chain verification  
 
-Used by **Dark Clawd** automation kit at [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd).
+Used by **Dark Clawd** at [cheshireterminal.ai/dark-clawd](https://cheshireterminal.ai/dark-clawd).
 
-```
-npm install solana-mpp mppx
-# optional peers for full on-chain charge methods:
-# npm install @solana/kit
+> **Name collision:** Unscoped [`solana-mpp`](https://www.npmjs.com/package/solana-mpp) on npm is a **different** package (sendaifun / mppx `^0.3`).  
+> This monorepo package is **`@x402solana/solana-mpp`**. Do **not** run `npm install solana-mpp` — that pulls 0.1.x and breaks on modern mppx.
+
+---
+
+## Install
+
+### From this monorepo (local)
+
+```bash
+cd mpp
+npm install
+npm run build
+npm test
+
+# optional peers for full /server and /client charge (not needed for dark-clawd paper):
+npm install mppx @solana/kit
 ```
 
-Local tarballs: `solana-mpp-0.5.0.tgz` (charge, current), `solana-mpp-0.2.0.tgz` (session-era reference under `vendor/`).
+From repo root:
+
+```bash
+npm install ./mpp
+# optional:
+npm install mppx @solana/kit
+```
+
+### Published consumers (scoped)
+
+```bash
+npm install @x402solana/solana-mpp
+# optional peers for on-chain charge methods:
+npm install mppx @solana/kit
+```
+
+### Dark Clawd product CLI (TUI)
+
+Hub `/api/dark-clawd/install.sh` currently returns **HTTP 402** (paywall). Prefer GitHub:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Solizardking/dark-clawd/main/tui/install.sh | bash
+# or
+npm install -g @x402solana/dark-clawd
+```
 
 ---
 
@@ -53,10 +90,10 @@ Deposit once → metered requests → top-up → close with refund.
 
 ## Dark Clawd quick start (paper MPP)
 
-Works without on-chain keys — perfect for sandbox + CI:
+Works **without** on-chain keys or mppx — perfect for sandbox + CI:
 
 ```ts
-import { createDarkClawdMpp } from 'solana-mpp/dark-clawd'
+import { createDarkClawdMpp } from '@x402solana/solana-mpp/dark-clawd'
 
 const mpp = createDarkClawdMpp({
   recipient: 'YOUR_WALLET_BASE58',
@@ -88,7 +125,7 @@ mpp.closeSession(session.sessionId)
 When peers are installed:
 
 ```ts
-import { Mppx, Store, solana } from 'solana-mpp/server'
+import { Mppx, Store, solana } from '@x402solana/solana-mpp/server'
 
 const mppx = Mppx.create({
   methods: [
@@ -117,7 +154,7 @@ async function handler(request: Request): Promise<Response> {
 Client auto-pay:
 
 ```ts
-import { Mppx, solana } from 'solana-mpp/client'
+import { Mppx, solana } from '@x402solana/solana-mpp/client'
 
 const mppx = Mppx.create({
   methods: [solana.charge({ /* wallet / signer */ })],
@@ -149,12 +186,6 @@ const response = await mppx.fetch('https://api.example.com/api/data')
 | POST | `https://cheshireterminal.ai/api/dark-clawd/mpp/charge` |
 | POST | `https://cheshireterminal.ai/api/dark-clawd/mpp/trade/plan` |
 
-One-shot install:
-
-```bash
-curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
-```
-
 ---
 
 ## Package layout
@@ -166,50 +197,26 @@ mpp/
 │   └── unpack-charge.mjs # restores server/client/root dist from .tgz
 ├── src/
 │   ├── constants.ts
-│   ├── Methods.ts        # charge schema (needs mppx when using root export)
+│   ├── Methods.ts
 │   ├── index.ts
 │   └── dark-clawd/       # paper/live Dark Clawd MPP (no peers)
 ├── bin/info.mjs
 ├── solana-mpp-0.5.0.tgz  # vendored charge release (build input)
-├── solana-mpp-0.2.0.tgz  # session-era reference
-└── vendor/session-0.2/   # extracted 0.2 session types (reference)
+└── vendor/session-0.2/   # session-era reference
 ```
 
 ```bash
 cd mpp && npm test && npm run build
-# build = unpack charge dist from solana-mpp-0.5.0.tgz + bun-build dark-clawd
 ```
 
 ### Exports
 
 | Import | Contents | Peers |
 | --- | --- | --- |
-| `solana-mpp` | Shared charge schema helpers | **mppx** at runtime |
-| `solana-mpp/server` | `solana.charge`, `Mppx`, `Store` | **mppx** + **@solana/kit** |
-| `solana-mpp/client` | Client `solana.charge`, `Mppx` | **mppx** |
-| `solana-mpp/dark-clawd` | `createDarkClawdMpp`, sessions, paper credentials | **none** (paper CI path) |
-
----
-
-## Verification model
-
-1. **Reference key** — unique id in the challenge; client includes it in the transfer context  
-2. **Credential** — signature or serialized transaction  
-3. **Server verify** — amount, mint, recipient ATA, success status  
-4. **Replay protection** — consumed credentials rejected  
-
-Paper mode simulates 1–3 for local sandbox without broadcasting.
-
----
-
-## Networks
-
-| Network | RPC |
-| --- | --- |
-| mainnet-beta | `https://api.mainnet-beta.solana.com` |
-| devnet | `https://api.devnet.solana.com` |
-| testnet | `https://api.testnet.solana.com` |
-| localnet | `http://localhost:8899` |
+| `@x402solana/solana-mpp` | Shared charge schema helpers | **mppx** at runtime |
+| `@x402solana/solana-mpp/server` | `solana.charge`, `Mppx`, `Store` | **mppx** + **@solana/kit** |
+| `@x402solana/solana-mpp/client` | Client `solana.charge`, `Mppx` | **mppx** |
+| `@x402solana/solana-mpp/dark-clawd` | `createDarkClawdMpp`, sessions, paper | **none** |
 
 ---
 
@@ -229,5 +236,5 @@ SOLANA_RPC_URL=https://…
 
 ISC — see `LICENSE`.
 
-Upstream Solana MPP methods: Solana Foundation [mpp-sdk](https://github.com/solana-foundation/mpp-sdk) / npm `@solana/mpp`.  
+Upstream charge methods: Solana Foundation [mpp-sdk](https://github.com/solana-foundation/mpp-sdk).  
 Dark Clawd integration: OpenClawd / Cheshire Terminal.
