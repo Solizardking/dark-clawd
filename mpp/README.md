@@ -161,26 +161,33 @@ curl -fsSL https://cheshireterminal.ai/api/dark-clawd/install.sh | bash
 
 ```
 mpp/
-├── dist/                 # @solana/mpp 0.5 charge methods (server/client)
+├── dist/                 # charge (from vendored 0.5.0) + dark-clawd build
+├── scripts/
+│   └── unpack-charge.mjs # restores server/client/root dist from .tgz
 ├── src/
 │   ├── constants.ts
-│   ├── Methods.ts
+│   ├── Methods.ts        # charge schema (needs mppx when using root export)
 │   ├── index.ts
-│   └── dark-clawd/       # Dark Clawd charge + session (paper/live)
+│   └── dark-clawd/       # paper/live Dark Clawd MPP (no peers)
 ├── bin/info.mjs
-├── solana-mpp-0.5.0.tgz  # vendored release
+├── solana-mpp-0.5.0.tgz  # vendored charge release (build input)
 ├── solana-mpp-0.2.0.tgz  # session-era reference
 └── vendor/session-0.2/   # extracted 0.2 session types (reference)
 ```
 
+```bash
+cd mpp && npm test && npm run build
+# build = unpack charge dist from solana-mpp-0.5.0.tgz + bun-build dark-clawd
+```
+
 ### Exports
 
-| Import | Contents |
-| --- | --- |
-| `solana-mpp` | Shared charge schema helpers |
-| `solana-mpp/server` | `solana.charge`, `Mppx`, `Store` (needs mppx + kit) |
-| `solana-mpp/client` | Client `solana.charge`, `Mppx` |
-| `solana-mpp/dark-clawd` | `createDarkClawdMpp`, sessions, paper credentials |
+| Import | Contents | Peers |
+| --- | --- | --- |
+| `solana-mpp` | Shared charge schema helpers | **mppx** at runtime |
+| `solana-mpp/server` | `solana.charge`, `Mppx`, `Store` | **mppx** + **@solana/kit** |
+| `solana-mpp/client` | Client `solana.charge`, `Mppx` | **mppx** |
+| `solana-mpp/dark-clawd` | `createDarkClawdMpp`, sessions, paper credentials | **none** (paper CI path) |
 
 ---
 

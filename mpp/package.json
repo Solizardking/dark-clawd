@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Solizardking/dark-clawd.git",
-    "directory": "dark-ralph/mpp"
+    "directory": "mpp"
   },
   "homepage": "https://cheshireterminal.ai/dark-clawd",
   "keywords": [
@@ -50,11 +50,13 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && bun run build:dark-clawd",
+    "build": "node scripts/unpack-charge.mjs && bun run build:dark-clawd",
+    "build:charge": "node scripts/unpack-charge.mjs",
     "build:dark-clawd": "bun build src/dark-clawd/index.ts --outdir dist/dark-clawd --target node --format esm && bun -e \"const fs=require('fs');fs.copyFileSync('src/dark-clawd/index.ts','dist/dark-clawd/index.d.ts')\"",
     "typecheck": "tsc --noEmit -p tsconfig.build.json 2>/dev/null || true",
     "test": "bun test src/dark-clawd",
-    "info": "node bin/info.mjs"
+    "info": "node bin/info.mjs",
+    "prepack": "npm run build"
   },
   "dependencies": {
     "@solana-program/compute-budget": "^0.15.0",
